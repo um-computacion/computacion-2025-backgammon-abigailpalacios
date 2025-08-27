@@ -21,3 +21,6 @@ class TestPlayer(unittest.TestCase):
         player2 = Player("Tincho", "Negras")
         self.assertEqual(str(player1),"Jugador: Mar, Ficha: Blancas")
         self.assertEqual(str(player2), "Jugador: Tincho, Ficha: Negras")
+
+if __name__ == '__main__':
+    unittest.main()
