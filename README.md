@@ -8,3 +8,4 @@ Carrera: Ingenieria en Informática
 3er commit (24/08): Realizo tercer commit con la estructura de la clase "dado" y su test correspondiente
 4to commit (25/08): realizo cuarto commit con el codigo de la clase "board" y su test correspondiente
 5to commit (26/08): Realizo quinto commit con el seguimiento de la clase board y sus tests
+6to commit (27/08): Realizo sexto commit agregando funciones en la clase board y los test correspondientes

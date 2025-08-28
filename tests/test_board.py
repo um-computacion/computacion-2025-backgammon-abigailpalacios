@@ -99,12 +99,50 @@ class TestBoard(unittest.TestCase):
         board.inicializar()
         pos_origen = 13
         pos_destino = 3
-        self.assertRaises(ValueError, board.validar_movimiento, pos_destino, pos_origen, "Negras")
+        self.assertRaises(ValueError, board.validar_movimiento, pos_destino, pos_origen, "Negras") 
+
+    def test_validar_orden_movimiento_blancas(self):
+        board = Board()
+        board.inicializar()
+        self.assertRaises(ValueError, board.validar_movimiento, 11, 3, "Blancas") #las fichas blancas no pueden moverse hacia atras
+
+    def test_validar_orden_movimiento_negras(self):
+        board = Board()
+        board.inicializar()
+        self.assertRaises(ValueError, board.validar_movimiento, 12, 21, "Negras") #las fichas negras no pueden moverse hacia delante
 
     def test_variables_como_string(self):
         board = Board()
         board.inicializar()
         self.assertIsNone(board.validar_movimiento("13", "7", "Blancas"))
+
+    def test_mover_destino_vacio_origen_vacio(self):
+        board = Board()
+        board.inicializar()
+        board.mover_ficha(0,1, "Blancas")
+        board.mover_ficha(0,1, "Blancas")
+        self.assertEqual(board.__tablero__[0], None) #al sacar ambas fichas que habian en esta posicion, no queda vacia, queda en "None"
+        self.assertEqual(board.__tablero__[1], ["Blancas", "Blancas"]) #se agregan dos fichas en esta posicion
+
+    def test_mover_destino_vacio(self):
+        board = Board()
+        board.inicializar()
+        board.mover_ficha(0,1, "Blancas")
+        self.assertEqual(board.__tablero__[1], ["Blancas"]) #en la posicon 1 se agrega una ficha
+        self.assertEqual(board.__tablero__[0], ["Blancas"])
+
+    def test_mover_destino_ocupado(self):
+        board = Board()
+        board.inicializar()
+        board.mover_ficha(0,11, "Blancas")
+        self.assertEqual(board.__tablero__[11], ["Blancas"]*6) #en la posicion 11 se agrega una ficha blanca
+        self.assertEqual(board.__tablero__[0], ["Blancas"])
+
+    def test_origen_vacio(self):
+        board = Board()
+        board.inicializar()
+        self.assertRaises(ValueError, board.mover_ficha, 1, 5, "Blancas") #no pueden moverse fichas de una posicion vacia
+
 
 if __name__ == '__main__':
     unittest.main()
