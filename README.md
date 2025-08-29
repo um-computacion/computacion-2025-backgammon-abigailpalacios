@@ -9,3 +9,4 @@ Carrera: Ingenieria en Informática
 4to commit (25/08): realizo cuarto commit con el codigo de la clase "board" y su test correspondiente
 5to commit (26/08): Realizo quinto commit con el seguimiento de la clase board y sus tests
 6to commit (27/08): Realizo sexto commit agregando funciones en la clase board y los test correspondientes
+7mo commit (28/08): Realizo septimo commit con metodo de comer ficha y devolver ficha, con sus test respectivamente

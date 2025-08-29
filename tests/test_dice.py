@@ -21,7 +21,7 @@ class TestDice(unittest.TestCase):
         dado.__movimiento__ = [1,1,1,1]
         movimiento = dado.get_movimiento()  
         self.assertEqual(movimiento, [1, 1, 1, 1])
-
+    
     
 if __name__ == '__main__':
     unittest.main()
