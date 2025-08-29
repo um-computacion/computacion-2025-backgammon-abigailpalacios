@@ -143,6 +143,65 @@ class TestBoard(unittest.TestCase):
         board.inicializar()
         self.assertRaises(ValueError, board.mover_ficha, 1, 5, "Blancas") #no pueden moverse fichas de una posicion vacia
 
+    def test_distancia_blancas(self):
+        board = Board()
+        self.assertEqual(board.distancia(5,15, "Blancas"),10)
+
+    def test_distancia_negras(self):
+        board = Board()
+        self.assertEqual(board.distancia(15, 5, "Negras"),10)
+
+    def test_distancia_invalida_blanca(self):
+        board = Board()
+        self.assertRaises(ValueError, board.validar_movimiento, 15, 5, "Blancas" )
+
+    def test_distancia_invalida_negra(self):
+        board = Board()
+        self.assertRaises(ValueError, board.validar_movimiento, 5, 15, "Negras")
+
+    def test_distancia_color_invalido(self):
+        board = Board()
+        self.assertRaises(ValueError, board.distancia, 5, 15, "Verde")
+
+    def test_ficha_comida(self):
+        board = Board()
+        board.inicializar()
+        board.banco()
+        board.__tablero__[4] = ["Negras"]
+        self.assertTrue(board.ficha_comida("Blanca", 4))
+        self.assertEqual(board.__tablero__[4], ["Blanca"])
+        self.assertEqual(board.__banco__["Negras"], 1)
+
+    def test_ficha_no_comida(self):
+        board = Board()
+        board.inicializar()
+        board.banco()
+        board.__tablero__[4] = ["Negras", "Negras"]
+        self.assertFalse(board.ficha_comida("Blanca", 4))
+        self.assertEqual(board.__tablero__[4], ["Negras", "Negras"])
+        self.assertEqual(board.__banco__["Negras"], 0)
+
+    def test_posicion_vacia(self):
+        board = Board()
+        board.inicializar()
+        board.banco()
+        board.__tablero__[4] = None
+        self.assertFalse(board.ficha_comida("Blanca", 4))
+
+    def test_devolver_ficha(self):
+        board = Board()
+        board.inicializar()
+        board.banco()
+        board.__banco__["Blancas"] = 2
+        board.devolver_ficha_comida("Blancas")
+        self.assertEqual(board.__banco__["Blancas"], 1)
+
+    def test_devolver_ficha_banco_vacio(self):
+        board = Board()
+        board.inicializar()
+        board.banco()
+        board.__banco__["Negras"] = 0
+        self.assertRaises(ValueError, board.devolver_ficha_comida, "Negras")
 
 if __name__ == '__main__':
     unittest.main()
