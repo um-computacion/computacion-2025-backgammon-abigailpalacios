@@ -42,6 +42,10 @@ class Board:
             raise ValueError("Movimiento invalido para fichas negras")
         if self.distancia(pos_origen, pos_destino, ficha) <= 0:
             raise ValueError("Movimiento invalido")
+        if self.__tablero__[pos_destino]  is not None and len(self.__tablero__[pos_destino]) >= 2 and self.__tablero__[pos_destino][0] != ficha: 
+        #comparamos que en la posicion a donde se mueve no esta vacia, que la cantidad de fichas es 2 o mas y que las fichas sean distintas para corroborar que no se puede mover ahi
+            raise ValueError("Movimiento invalido, posicion ocupada por oponente") 
+    
         
     def ficha_comida(self, ficha, pos_destino):
         if self.__tablero__[pos_destino] == None:
@@ -51,22 +55,39 @@ class Board:
             self.__tablero__[pos_destino] = [ficha] #agrego la ficha que comio a la posicion
             self.__banco__[oponente] += 1  #agrego la ficha comida al banc0
             return True
+        if len(self.__tablero__[pos_destino]) >=2 :
+            return False
+        return False
         
-    def devolver_ficha_comida(self, ficha):
+    def devolver_ficha_comida(self, ficha, pos_destino):
         if self.__banco__[ficha] <= 0: #si en el banco no hay fichas, no se puede devolver ninguna ficha
             raise ValueError("No hay fichas en el banco")
         if self.__banco__[ficha] >0:
-            self.__banco__[ficha] -= 1 #restamos una ficha del banco
-            return
+            if self.__tablero__[pos_destino] == None:
+                self.__tablero__[pos_destino] = [ficha] #si luego que ingreso al banco, quiere volver al tablero
+                self.__banco__[ficha] -= 1 
+            elif self.__tablero__[pos_destino][0] == ficha:
+                self.__tablero__[pos_destino].append(ficha)
+                self.__banco__[ficha] -= 1 
+            elif len(self.__tablero__[pos_destino]) == 1 and self.__tablero__[pos_destino][0] != ficha:
+                self.__tablero__[pos_destino].append(ficha)
+                self.__banco__[ficha] -= 1 #restamos una ficha del banco
+        
         
     def mover_ficha(self, pos_origen, pos_destino, ficha):
         self.validar_movimiento(pos_destino, pos_origen, ficha)
-        if self.__tablero__[pos_destino] is None: #Si la posicion de la ficha esta vacia, agrego la ficha
-            self.__tablero__[pos_destino] = [ficha]
-        else:
-            self.__tablero__[pos_destino].append(ficha) #si hay fichas, agrego otra a la lista
-        
+        if not self.ficha_comida(ficha, pos_destino):
+            if self.__tablero__[pos_destino] is None : #Si la posicion de la ficha esta vacia y no se ha comido/no se puede comer ninguna ficha, agrego la ficha
+                self.__tablero__[pos_destino] = [ficha]
+            else:
+                self.__tablero__[pos_destino].append(ficha) #si hay fichas, agrego otra a la lista
         self.__tablero__[pos_origen].pop() #Luego de cualquier movimiento, debo remover la ficha de la posicion
-        
         if not self.__tablero__[pos_origen]: #Si la lista queda vacia, la pongo en None
             self.__tablero__[pos_origen] = None
+
+    
+    def sin_fichas(self, ficha):  #evaluamos si en el tablero no quedan mas fichas
+        for casilla in self.__tablero__:
+            if casilla is not None and ficha in casilla:
+                return False
+        return True
