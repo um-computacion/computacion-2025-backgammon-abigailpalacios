@@ -41,6 +41,13 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
     - Metodo `mover_ficha` donde definimos el movimiento de las fichas en el tablero
     - Metodo `sin_fichas` donde nos devuel que ficha ya no se encuentra en el tablero
 
+- **Clase 'Checker' y sus test**
+    - Estructura principal con la ficha y posicion de cada una
+    - Metodo `get_movimiento` que me dira donde esta la ficha
+    - Metodo `en_banco` que define si la ficha esta en el banco (True) o no (False)
+    - Metodo `ficha_afuera` que me define si la ficha se encuentra todavia participando en el juego o no
+    - Metodo `__str__` que me devuelve una string con la ficha en particular y su posicion
+
 - Cada una de las clases cuentan con sus test
 
 ### Fixed
