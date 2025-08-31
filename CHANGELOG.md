@@ -1,0 +1,50 @@
+# CHANGELOG
+
+En este archivo se guardaran todos los cambios realizados en el proyecto
+
+El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
+y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
+
+# UNRELEASE
+
+### Categorias
+
+- Added: agregados en el documento
+- Changed: cambios en el documento
+- Removed: borrados en el documento
+- Fixed: arreglos en el documento
+
+## 1.0.0
+### Added
+
+- Creacion de las carpetas y sus archivos
+
+- **Clase 'Player' y sus test:**
+    - Estructura principal con el nombre y sus fichas
+    - metodo `get_nombre`, que me devolvera el nombre del jugador
+    - metodo `get_ficha`, que me devolvera la ficha del jugador
+
+- **Clase 'Dice' y sus test:**
+    - Estructura principal con dado 1 y 2
+    - Metodo `movimiento` que esta definido como una lista que guardara los valores de los dados
+    - Metodo `tirar`, que nos devuelve un numero cualquiera entre 1 y 6
+    - En el metodo `tirar` tenemos dos caminos posibles, que ambos dados sean iguales, el cual nos devuelve 4 valores o que sean distintos donde solo nos devuelve dos valores
+
+- **Clase 'Board' y sus test:**
+    - Estructura principal que es una lista con 24 posiciones vacias
+    - Metodo `inicializar` donde definimos la posicion inicial de las fichas
+    - Metodo `banco` donde definimos las fichas comidas
+    - Metodo `distancia` donde definimos como se moveran las fichas en el tablero
+    - Metodo `validar_movimiento` donde definimos de que manera se pueden mover las fichas en el tablero
+    - Metodo `ficha_comida` donde definimos cuando una ficha puede comer otra
+    - Metodo `devolver_ficha` donde definimos si podemos devolver la ficha al tablero
+    - Metodo `mover_ficha` donde definimos el movimiento de las fichas en el tablero
+    - Metodo `sin_fichas` donde nos devuel que ficha ya no se encuentra en el tablero
+
+- Cada una de las clases cuentan con sus test
+
+### Fixed
+
+- Corrección en los métodos `validar_movimiento` y `mover_ficha` para contemplar casos inválidos de destino y origen.  
+- Ajuste en `devolver_ficha_comida` para cubrir casos de fichas del mismo color y del color opuesto.  
+- Agregados tests adicionales en la clase `Board` para incrementar la cobertura hasta 100%.  

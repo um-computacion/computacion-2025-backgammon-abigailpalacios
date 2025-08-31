@@ -117,6 +117,7 @@ class TestBoard(unittest.TestCase):
         board.__tablero__[4] = ["Negras", "Negras"]
         self.assertRaises(ValueError, board.mover_ficha, 0, 4, ["Blancas"])
 
+
     def test_variables_como_string(self):
         board = Board()
         board.inicializar()
@@ -244,6 +245,16 @@ class TestBoard(unittest.TestCase):
         board.__tablero__[3] = None
         board.devolver_ficha_comida("Negras", 3)
         self.assertEqual(board.__tablero__[3], ["Negras"])
+        self.assertEqual(board.__banco__["Negras"], 0)
+
+    def test_devolver_ficha_comida_pos_misma_ficha(self):
+        board = Board()
+        board.inicializar()
+        board.banco()
+        board.__banco__["Negras"] = 1
+        board.__tablero__[3] = ["Negras"]
+        board.devolver_ficha_comida("Negras", 3)
+        self.assertEqual(board.__tablero__[3], ["Negras", "Negras"])
         self.assertEqual(board.__banco__["Negras"], 0)
 
     def test_no_devolver_ficha_comida(self):
