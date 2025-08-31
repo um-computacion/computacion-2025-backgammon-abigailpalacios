@@ -16,6 +16,14 @@ class TestPlayer(unittest.TestCase):
         player = Player("Franco", "Blancas")
         self.assertEqual(str(player), "Jugador: Franco, Ficha: Blancas")
 
+    def test_get_nombre(self):
+        player = Player("Camila", "Blancas")
+        self.assertEqual(player.get_nombre(), "Camila")
+
+    def test_get_ficha(self):
+        player = Player("Martin", "Negras")
+        self.assertEqual(player.get_ficha(), "Negras")
+
     def test_dos_jugadores(self):
         player1 = Player("Mar", "Blancas")
         player2 = Player("Tincho", "Negras")
