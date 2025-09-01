@@ -29,27 +29,26 @@ Además incluye:
 ##  Instalación
 
 1. Clonar el repositorio:
-   ```bash
-   git clone https://github.com/usuario/backgammon.git
-   cd backgammon
+    - git clone https://github.com/usuario/backgammon.git
+    - cd backgammon
 
 2. Crear un entorno virtual:
-    python -m venv venv
-    source venv/bin/activate   (Linux/Mac)
-    venv\Scripts\activate      (Windows)
+    - python -m venv venv
+    - source venv/bin/activate   (Linux/Mac)
+    - venv\Scripts\activate      (Windows)
 
 3. Instalar dependencias:
-    pip install -r requirements.txt
+    - pip install -r requirements.txt
 
 ## Uso
 
 - Ejecutar los test con unittest:
-    python -m unittest discover
+    - python -m unittest discover
 
 - Reporte de cobertura:
-    coverage run -m unittest discover
-    coverage report
-    coverage html
+    - coverage run -m unittest discover
+    - coverage report
+    - coverage html
 
 ## Estructura del Proyecto
 
