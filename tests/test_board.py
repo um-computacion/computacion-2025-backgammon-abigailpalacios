@@ -87,19 +87,15 @@ class TestBoard(unittest.TestCase):
         pos_destino = 7
         self.assertRaises(ValueError, board.validar_movimiento, pos_destino, pos_origen, "Negras")
 
-    def test_validar_movimiento_blancas(self):
-        board = Board()
-        board.inicializar()
-        pos_origen = 13
-        pos_destino = 3
-        self.assertRaises(ValueError, board.validar_movimiento, pos_destino, pos_origen, "Blancas")
-
     def test_validar_movimiento_negras(self):
         board = Board()
         board.inicializar()
-        pos_origen = 13
-        pos_destino = 3
-        self.assertRaises(ValueError, board.validar_movimiento, pos_destino, pos_origen, "Negras") 
+        self.assertRaises(ValueError, board.validar_movimiento, 12, 21, "Negras")
+
+    def test_validar_movimiento_blancas(self):
+        board = Board()
+        board.inicializar()
+        self.assertRaises(ValueError, board.validar_movimiento, 3, 11, "Blancas")
 
     def test_validar_orden_movimiento_blancas(self):
         board = Board()
@@ -156,25 +152,6 @@ class TestBoard(unittest.TestCase):
         board.inicializar()
         self.assertRaises(ValueError, board.mover_ficha, 1, 5, "Blancas") #no pueden moverse fichas de una posicion vacia
 
-    def test_distancia_blancas(self):
-        board = Board()
-        self.assertEqual(board.distancia(5,15, "Blancas"),10)
-
-    def test_distancia_negras(self):
-        board = Board()
-        self.assertEqual(board.distancia(15, 5, "Negras"),10)
-
-    def test_distancia_invalida_blanca(self):
-        board = Board()
-        self.assertRaises(ValueError, board.validar_movimiento, 15, 5, "Blancas" )
-
-    def test_distancia_invalida_negra(self):
-        board = Board()
-        self.assertRaises(ValueError, board.validar_movimiento, 5, 15, "Negras")
-
-    def test_distancia_color_invalido(self):
-        board = Board()
-        self.assertRaises(ValueError, board.distancia, 5, 15, "Verde")
 
     def test_ficha_comida(self):
         board = Board()
@@ -257,6 +234,20 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(board.__tablero__[3], ["Negras", "Negras"])
         self.assertEqual(board.__banco__["Negras"], 0)
 
+    def test_devolver_ficha_comida_oponente(self):
+        board = Board()
+        board.inicializar()
+        board.banco()
+        board.__banco__["Negras"] = 1     
+        board.__banco__["Blancas"] = 0     
+        board.__tablero__[3] = ["Blancas"]   
+        self.assertFalse(board.devolver_ficha_comida("Negras", 3))
+        self.assertEqual(board.__tablero__[3], ["Negras"]) 
+        self.assertEqual(board.__banco__["Negras"], 0)    
+        self.assertEqual(board.__banco__["Blancas"], 1)
+           
+
+
     def test_no_devolver_ficha_comida(self):
         board = Board()
         board.inicializar()
@@ -278,8 +269,6 @@ class TestBoard(unittest.TestCase):
         board.__tablero__ = [None]*24
         self.assertTrue(board.sin_fichas("Negras"))
         self.assertTrue(board.sin_fichas("Blancas"))        
-
-
 
 
 if __name__ == '__main__':

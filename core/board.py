@@ -19,14 +19,6 @@ class Board:
     
     def mostrar_tablero(self):
         return self.__tablero__
-    
-    def distancia(self, pos_origen, pos_destino,ficha): #determina si el movimiento que se quiere hacer es valido (que avance resptectivamente)
-        if ficha == "Blancas":
-            return pos_destino - pos_origen
-        if ficha == "Negras":
-            return pos_origen - pos_destino
-        else:
-            raise ValueError("Ficha invalida")
         
 
     def validar_movimiento(self, pos_destino, pos_origen, ficha):  #Validamos los movimientos que puede hacer cada jugador
@@ -34,15 +26,13 @@ class Board:
         pos_destino = int(pos_destino)
         if pos_destino <0 or pos_destino > 23 or pos_origen < 0 or pos_origen > 23: #la posicion de origen y destino deben estar entre 0 y 23
             raise ValueError("Posicion de destino invalida")
-        if not self.__tablero__[pos_origen]:  #Debe haber un error si en la posicion de origen no hay ninguna ficha
+        elif not self.__tablero__[pos_origen]:  #Debe haber un error si en la posicion de origen no hay ninguna ficha
             raise ValueError("No hay fichas en el lugar de origen")
-        if ficha == "Blancas" and pos_destino <= pos_origen:  #Las fichas blancas pueden moverse hacia delante (de 0 a 23)
+        elif ficha == "Blancas" and pos_destino <= pos_origen:  #Las fichas blancas pueden moverse hacia delante (de 0 a 23)
             raise ValueError("Movimiento invalido para fichas blancas")
-        if ficha == "Negras" and pos_destino >= pos_origen: #Las fichas negras pueden moverse hacia atras (de 23 a 0)
+        elif ficha == "Negras" and pos_destino >= pos_origen: #Las fichas negras pueden moverse hacia atras (de 23 a 0)
             raise ValueError("Movimiento invalido para fichas negras")
-        if self.distancia(pos_origen, pos_destino, ficha) <= 0:
-            raise ValueError("Movimiento invalido")
-        if self.__tablero__[pos_destino]  is not None and len(self.__tablero__[pos_destino]) >= 2 and self.__tablero__[pos_destino][0] != ficha: 
+        elif self.__tablero__[pos_destino]  is not None and len(self.__tablero__[pos_destino]) >= 2 and self.__tablero__[pos_destino][0] != ficha: 
         #comparamos que en la posicion a donde se mueve no esta vacia, que la cantidad de fichas es 2 o mas y que las fichas sean distintas para corroborar que no se puede mover ahi
             raise ValueError("Movimiento invalido, posicion ocupada por oponente") 
     
@@ -62,16 +52,18 @@ class Board:
     def devolver_ficha_comida(self, ficha, pos_destino):
         if self.__banco__[ficha] <= 0: #si en el banco no hay fichas, no se puede devolver ninguna ficha
             raise ValueError("No hay fichas en el banco")
-        if self.__banco__[ficha] >0:
+        else:
             if self.__tablero__[pos_destino] == None:
                 self.__tablero__[pos_destino] = [ficha] #si luego que ingreso al banco, quiere volver al tablero
                 self.__banco__[ficha] -= 1 
-            elif self.__tablero__[pos_destino][0] == ficha:
+            elif self.__tablero__[pos_destino][0] == ficha: 
                 self.__tablero__[pos_destino].append(ficha)
                 self.__banco__[ficha] -= 1 
             elif len(self.__tablero__[pos_destino]) == 1 and self.__tablero__[pos_destino][0] != ficha:
-                self.__tablero__[pos_destino].append(ficha)
-                self.__banco__[ficha] -= 1 #restamos una ficha del banco
+                oponente = self.__tablero__[pos_destino][0] #la ficha que se encuentra en esta posicion es la del "oponente" 
+                self.__tablero__[pos_destino] = [ficha]        # reemplazamos la del oponente en dicha posicion por la nueva
+                self.__banco__[ficha] -= 1                      # baja el banco de la ficha nueva
+                self.__banco__[oponente] += 1                   # aumenta el banco del oponente
         
         
     def mover_ficha(self, pos_origen, pos_destino, ficha):
