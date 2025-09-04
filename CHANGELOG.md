@@ -14,7 +14,24 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Removed: borrados en el documento
 - Fixed: arreglos en el documento
 
-## 1.0.0
+## 1.1.0 (Segundo Sprint)
+
+### Added
+
+- Se agregaron test en la clase `Dice` vistos en clase para poder testear la herramienta `randint`
+- Se agregaron test en la clase `Board` para aumentar el coverage
+
+### Fixed
+
+- Habian lineas en las clases `Board` y `Dice` que no eran testeadas
+- En el metodo `devolver_ficha_comida` no se respetaba que si se encontaba una sola ficha en cierta posicion, el oponene que se encontraba esperando a sacar la ficha del banco, podia comer a su rival 
+
+### Removed
+
+- Se elimino el metodo `distancia` que generaba redundancia y provocaba error en los test
+
+## 1.0.0 (Primer Sprint)
+
 ### Added
 
 - Creacion de las carpetas y sus archivos
