@@ -20,6 +20,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 - Se agregaron test en la clase `Dice` vistos en clase para poder testear la herramienta `randint`
 - Se agregaron test en la clase `Board` para aumentar el coverage
+- Se comenzo a implementar la clase `Backgammongame`, que relacionara todas las clases 
+- Se agregaron test pra los metodos implementadas en `Backgammongame`
 
 ### Fixed
 
