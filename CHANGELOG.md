@@ -22,6 +22,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Se agregaron test en la clase `Board` para aumentar el coverage
 - Se comenzo a implementar la clase `Backgammongame`, que relacionara todas las clases 
 - Se agregaron test pra los metodos implementadas en `Backgammongame`
+- Se agregaron funciones y test en la clase `Backgammongame`
 
 ### Fixed
 
