@@ -36,3 +36,27 @@ class TestBackgammon(unittest.TestCase):
     def test_tirar_dados(self):
         game = Backgammongame("Franco", "Martin")
         self.assertTrue(all(1 <= x <= 6 for x in game.tirar_dados())) #verificamos la tirada de dados sea correcta
+
+    def test_get_dados(self):
+        game = Backgammongame("Franco", "Martin")
+        game.tirar_dados() 
+        self.assertTrue(game.get_dados(),all(1 <= x <= 6 for x in game.tirar_dados()))
+
+    def test_usar_dado(self):
+        game = Backgammongame("Mar", "Abril")
+        game.__dice__.__movimiento__ = [6, 4]
+        game.usar_dados(6)
+        self.assertEqual(game.dados_restantes(), [4])
+
+    def test_usar_dado_invalido(self):
+        game = Backgammongame("Mar", "Abril")
+        game.__dice__.__movimiento__ = [6, 4]
+        game.usar_dados(6)
+        self.assertNotEqual(game.dados_restantes(), [6,4])
+
+    def test_usar_dado_invalido_excepcion(self):
+        game = Backgammongame("Mar", "Abril")
+        game.__dice__.__movimiento__ = [6, 4]
+        with self.assertRaises(ValueError):
+            game.usar_dados(3)
+    
