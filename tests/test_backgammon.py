@@ -121,3 +121,29 @@ class TestBackgammon(unittest.TestCase):
         game.mover_ficha(7,5) 
         with self.assertRaises(ValueError):
             game.mover_ficha(5,7)
+
+    def test_reingresar_ficha_blanca(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_banco()["Blancas"] = 1
+        game.__dice__.__movimiento__ = [2, 5]  
+        game.reingresar_ficha(2)
+        self.assertEqual(game.dados_restantes(), [5])
+        self.assertEqual(game.get_board().mostrar_tablero()[1], ["Blancas"])
+        self.assertEqual(game.get_banco()["Blancas"], 0)
+
+    def test_ingresar_ficha_invalido(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_banco()["Blancas"] = 1
+        game.__dice__.__movimiento__ = [2, 5]  
+        with self.assertRaises(ValueError):
+            game.reingresar_ficha(11)
+
+    def test_reingresar_ficha_negra(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno() 
+        game.get_banco()["Negras"] = 1
+        game.__dice__.__movimiento__ = [2, 5]  
+        game.reingresar_ficha(2)
+        self.assertEqual(game.dados_restantes(), [5])
+        self.assertEqual(game.get_board().mostrar_tablero()[22], ["Negras"])
+        self.assertEqual(game.get_banco()["Negras"], 0)
