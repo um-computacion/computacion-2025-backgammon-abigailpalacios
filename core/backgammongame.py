@@ -22,7 +22,9 @@ class Backgammongame():
     def get_player2(self):
         return self.__player2__
 
-    
+    def get_ficha(self):
+        return self.__turno__.get_ficha() 
+
     def get_board(self):
         return self.__board__ 
     
@@ -47,13 +49,32 @@ class Backgammongame():
         return self.__dice__.get_movimiento()
     
     def dados_restantes(self):
-        return list(self.__dice__.get_movimiento())
+        return list(self.__dice__.get_movimiento()) #Creamos una lista para guardar los movimientos disponibles del dado
     
     def usar_dados(self, valido):
         movimiento = self.__dice__.get_movimiento() #verificamos que el dado  tenga valores para poder mover las fichas       
         if valido in movimiento:                                
-            movimiento.remove(valido)     #remueve el valor usado, (por ejemplo, si tiro los dados y me devuelve 4,5 y uso el 4, no me deje volver a usar el 4)                      
+            movimiento.remove(valido)     #remueve el valor usado (por ejemplo, si tiro los dados y me devuelve 4,5 y uso el 4, no me deje volver a usar el 4)                      
         else:
             raise ValueError("Ese valor de dado no está disponible")
         
-    
+    def mover_ficha(self, origen, destino):
+        ficha = self.get_ficha()
+        origen = int(origen)
+        destino = int(destino)
+        if self.banco[ficha] > 0: #Si tengo fichas en el banco, no puedo mover las fichas
+            raise ValueError("Retirar fichas en el banco antes de continuar")
+        if self.dados_restantes() == []:  #Si no tengo movimientos del dado disponibles, no puedo mover
+            raise ValueError("No tiene movimientos disponibles")
+        if ficha == "Blancas":  #Si la ficha es blanca, su movimiento es de la posicion 1 a la 24
+            pasos = destino - origen    
+        else : #si la ficha es negra, su movimiento es de la posicion 24 a la 1
+            pasos = origen - destino
+            
+        if pasos not in self.get_dados():
+            raise ValueError("Ese valor de dado no está disponible") #Si la ficha no puede moverse esa cantidad de pasos, no se mueve
+        
+        self.__board__.validar_movimiento(destino, origen, ficha) #Validamos movimientos ya hechos en la clase tablero 
+        self.__board__.mover_ficha(origen, destino, ficha) #Movemos la ficha en el tablero
+        self.usar_dados(pasos) #Al usar el dado, removemos ese valos de la lista de movimientos disponibles
+            

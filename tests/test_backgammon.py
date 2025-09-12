@@ -60,3 +60,64 @@ class TestBackgammon(unittest.TestCase):
         with self.assertRaises(ValueError):
             game.usar_dados(3)
     
+    def test_get_ficha(self):
+        game = Backgammongame("Mar", "Abril")
+        self.assertEqual(game.get_ficha(), "Blancas")  
+        game.definir_turno()
+        self.assertEqual(game.get_ficha(), "Negras")  
+
+    def test_mover_ficha(self):
+        game = Backgammongame("Mar", "Abril")
+        game.get_board().inicializar()
+        game.__dice__.__movimiento__ = [3, 6]
+        game.mover_ficha(0, 3)
+        self.assertEqual(game.dados_restantes(), [6])  
+        self.assertEqual(game.get_board().mostrar_tablero()[3], ["Blancas"])
+        self.assertEqual(game.get_board().mostrar_tablero()[0], ["Blancas"])
+
+    def test_ficha_en_banco(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_banco()["Blancas"] = 1
+        game.__dice__.__movimiento__ = [2, 6]
+        with self.assertRaises(ValueError):
+            game.mover_ficha(0, 2) 
+
+    def test_sin_dados(self):
+        game = Backgammongame("Mar", "Abril")
+        game.get_board().inicializar()
+        game.__dice__.__movimiento__ = [3]
+        game.mover_ficha(0, 3)
+        with self.assertRaises(ValueError):
+            game.mover_ficha(3,7)
+
+    def test_mover_ficha_blanca(self):
+        game = Backgammongame ("Mar", "Franco")
+        game.__dice__.__movimiento__ = [2, 5]
+        game.mover_ficha(0, 2)
+        self.assertEqual(game.dados_restantes(), [5])
+        self.assertEqual(game.get_board().mostrar_tablero()[0], ["Blancas"])
+        self.assertEqual(game.get_board().mostrar_tablero()[2], ["Blancas"])
+
+    def test_mover_ficha_negra(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno() 
+        game.__dice__.__movimiento__ = [2, 6]  
+        game.mover_ficha(7, 5)  
+        self.assertEqual(game.dados_restantes(), [6])
+        self.assertEqual(game.get_board().mostrar_tablero()[5], ["Negras"] * 6)
+        self.assertEqual(game.get_board().mostrar_tablero()[7], ["Negras"] * 2)
+
+    def test_pasos_blancas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.__dice__.__movimiento__ = [2, 5]  
+        game.mover_ficha(0, 2) 
+        with self.assertRaises(ValueError):
+            game.mover_ficha(2,0)
+
+    def test_pasos_negras(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno() 
+        game.__dice__.__movimiento__ = [2, 6]  
+        game.mover_ficha(7,5) 
+        with self.assertRaises(ValueError):
+            game.mover_ficha(5,7)
