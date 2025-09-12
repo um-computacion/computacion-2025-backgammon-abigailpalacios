@@ -78,3 +78,13 @@ class Backgammongame():
         self.__board__.mover_ficha(origen, destino, ficha) #Movemos la ficha en el tablero
         self.usar_dados(pasos) #Al usar el dado, removemos ese valos de la lista de movimientos disponibles
             
+    def reingresar_ficha(self, dado):
+        ficha = self.get_ficha()
+        if dado not in self.get_dados():
+                raise ValueError("Ese valor de dado no está disponible para reingresar")  #El movimiento no es valido para el jugador
+        if ficha == "Blancas": 
+                destino = dado - 1 #Si la ficha es blanca, entra de la posicion 1 al 6
+        else: 
+                destino = 24 - dado  #Si la ficha es negra, entra de la posicion 24 al 19
+        self.__board__.devolver_ficha_comida(ficha, destino)
+        self.usar_dados(dado)
