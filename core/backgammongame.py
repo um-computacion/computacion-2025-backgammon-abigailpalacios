@@ -58,24 +58,24 @@ class Backgammongame():
         else:
             raise ValueError("Ese valor de dado no está disponible")
         
-    def mover_ficha(self, origen, destino):
+    def mover_ficha(self, pos_origen, pos_destino):
         ficha = self.get_ficha()
-        origen = int(origen)
-        destino = int(destino)
+        pos_origen = int(pos_origen)
+        pos_destino = int(pos_destino)
         if self.banco[ficha] > 0: #Si tengo fichas en el banco, no puedo mover las fichas
             raise ValueError("Retirar fichas en el banco antes de continuar")
         if self.dados_restantes() == []:  #Si no tengo movimientos del dado disponibles, no puedo mover
             raise ValueError("No tiene movimientos disponibles")
         if ficha == "Blancas":  #Si la ficha es blanca, su movimiento es de la posicion 1 a la 24
-            pasos = destino - origen    
+            pasos = pos_destino - pos_origen    
         else : #si la ficha es negra, su movimiento es de la posicion 24 a la 1
-            pasos = origen - destino
+            pasos = pos_origen - pos_destino
             
         if pasos not in self.get_dados():
             raise ValueError("Ese valor de dado no está disponible") #Si la ficha no puede moverse esa cantidad de pasos, no se mueve
         
-        self.__board__.validar_movimiento(destino, origen, ficha) #Validamos movimientos ya hechos en la clase tablero 
-        self.__board__.mover_ficha(origen, destino, ficha) #Movemos la ficha en el tablero
+        self.__board__.validar_movimiento(pos_destino, pos_origen, ficha) #Validamos movimientos ya hechos en la clase tablero 
+        self.__board__.mover_ficha(pos_origen, pos_destino, ficha) #Movemos la ficha en el tablero
         self.usar_dados(pasos) #Al usar el dado, removemos ese valos de la lista de movimientos disponibles
             
     def reingresar_ficha(self, dado):
@@ -111,3 +111,27 @@ class Backgammongame():
                     return False     #Si una ficha se encuentra en las posiciones [6, 23] de las fichas negras, no se puede validar el sacar una ficha
             return True
         
+    def retirar_ficha(self, pos_origen):
+        ficha = self.get_ficha()
+        tablero = self.__board__.mostrar_tablero()
+        if self.banco[ficha] > 0: #Si tengo fichas en el banco, no puedo mover las fichas
+            raise ValueError("Retirar fichas en el banco antes de continuar")
+        if self.posiciones_finales() is False: # Si todas las fichas no se encuentran en las posiciones finales, no se pueden retirar fichas
+            raise ValueError("Todas las fichas deben estar en el ultimo cuadrante para retirar")
+        if self.dados_restantes() == []: #Si no hay dados para usar, no se puede mover
+            raise ValueError("Movimiento de dado no disponible")
+        if tablero[pos_origen] is None or ficha not in tablero[pos_origen]: #Si no se encuentra fichas en la posicion de origen o la ficha a mover no esta en la posicion, no se puede retirar
+            raise ValueError("No hay fichas disponibles para retirar")
+        if ficha == "Blancas":
+            distancia = 24 - pos_origen
+            distancia_lejana = range(pos_origen + 1, 24)
+        else:
+            distancia = pos_origen + 1
+            distancia_lejana = range(0, pos_origen)
+        dados = self.get_dados()
+        if distancia == dados:
+            tablero[pos_origen].remove(ficha)
+            if not tablero[pos_origen]:
+                tablero[pos_origen] = None
+            self.usar_dados(distancia)
+            return
