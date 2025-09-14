@@ -164,3 +164,41 @@ class TestBackgammon(unittest.TestCase):
     def test_no_hay_ganador(self):
         game = Backgammongame("Mar", "Franco")
         self.assertIsNone(game.ganador(), "Blancas")
+
+    def test_posiciones_finales_blancas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[19] = ["Blancas"] * 2
+        game.get_board().__tablero__[20] = ["Blancas"] * 2
+        game.get_board().__tablero__[21] = ["Blancas"] * 7
+        game.get_board().__tablero__[22] = ["Blancas"] * 4
+        self.assertTrue(game.posiciones_finales())
+
+    def test_posiciones_finales_blancas_false(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[5] = ["Blancas"] * 2
+        game.get_board().__tablero__[20] = ["Blancas"] * 2
+        game.get_board().__tablero__[21] = ["Blancas"] * 7
+        game.get_board().__tablero__[22] = ["Blancas"] * 4
+        self.assertFalse(game.posiciones_finales())
+
+    def test_posiciones_finales_negras(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.definir_turno()
+        game.get_board().__tablero__[5] = ["Negras"] * 2
+        game.get_board().__tablero__[4] = ["Negras"] * 2
+        game.get_board().__tablero__[3] = ["Negras"] * 7
+        game.get_board().__tablero__[2] = ["Negras"] * 4
+        self.assertTrue(game.posiciones_finales())
+
+    def test_posiciones_finales_negras_false(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.definir_turno()
+        game.get_board().__tablero__[15] = ["Negras"] * 2
+        game.get_board().__tablero__[4] = ["Negras"] * 2
+        game.get_board().__tablero__[3] = ["Negras"] * 7
+        game.get_board().__tablero__[2] = ["Negras"] * 4
+        self.assertFalse(game.posiciones_finales())

@@ -90,10 +90,24 @@ class Backgammongame():
         self.usar_dados(dado)
 
     def ganador(self):
-        if self.__board__.sin_fichas(self.__player1__.get_ficha()):
+        if self.__board__.sin_fichas(self.__player1__.get_ficha()):  #para ganar, no debe de haber fichas en el tablero de dicho jugador
             return self.__player1__.get_nombre()
         elif self.__board__.sin_fichas(self.__player2__.get_ficha()):
             return self.__player2__.get_nombre()
         else:
             return None
-         
+        
+    def posiciones_finales(self):
+        ficha = self.get_ficha()
+        tablero = self.__board__.mostrar_tablero()
+        if ficha == "Blancas":
+            for pos in range(0, 18):
+                if tablero[pos] and ficha in tablero[pos]:
+                    return False    #Si una ficha se encuentra en las posiciones [0, 17] de las fichas blancas, no se puede validar el sacar una ficha
+            return True
+        else:
+            for pos in range(6, 24):
+                if tablero[pos] and ficha in tablero[pos]:
+                    return False     #Si una ficha se encuentra en las posiciones [6, 23] de las fichas negras, no se puede validar el sacar una ficha
+            return True
+        

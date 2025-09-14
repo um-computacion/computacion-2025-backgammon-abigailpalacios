@@ -26,6 +26,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Se implemento el metodo `mover_ficha` en la clase `Backgammon`
 - Se implemento el metodo `reingresar_ficha` en la clase `Backgammon`
 - Se implemento el metodo `gaandor` en la clase `Backgammon`
+- Se implemento el metodo `posicioines` en la clase `Backgammon`, para permitir retirar una ficha 
 
 ### Fixed
 
