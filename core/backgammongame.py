@@ -110,4 +110,23 @@ class Backgammongame():
                 if tablero[pos] and ficha in tablero[pos]:
                     return False     #Si una ficha se encuentra en las posiciones [6, 23] de las fichas negras, no se puede validar el sacar una ficha
             return True
-        
+
+    def retirar_ficha(self, pos_origen):
+            ficha = self.get_ficha()
+            tablero = self.__board__.mostrar_tablero()
+            if self.banco[ficha] > 0: #Si tengo fichas en el banco, no puedo mover las fichas
+                raise ValueError("Retirar fichas en el banco antes de continuar")
+            if self.posiciones_finales() is False: # Si todas las fichas no se encuentran en las posiciones finales, no se pueden retirar fichas
+                raise ValueError("Todas las fichas deben estar en el ultimo cuadrante para retirar")
+            if self.dados_restantes() == []: #Si no hay dados para usar, no se puede mover
+                raise ValueError("Movimiento de dado no disponible")
+            if tablero[pos_origen] is None or ficha not in tablero[pos_origen]: #Si no se encuentra fichas en la posicion de origen o la ficha a mover no esta en la posicion, no se puede retirar
+                raise ValueError("No hay fichas disponibles para retirar")
+            if ficha == "Blancas":
+                distancia = 24 - pos_origen
+            else:
+                distancia = pos_origen + 1
+            dados = self.get_dados()
+            if distancia == dados:
+                tablero[pos_origen].pop(ficha)
+                self.usar_dados(distancia)
