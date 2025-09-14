@@ -122,11 +122,3 @@ class Backgammongame():
                 raise ValueError("Movimiento de dado no disponible")
             if tablero[pos_origen] is None or ficha not in tablero[pos_origen]: #Si no se encuentra fichas en la posicion de origen o la ficha a mover no esta en la posicion, no se puede retirar
                 raise ValueError("No hay fichas disponibles para retirar")
-            if ficha == "Blancas":
-                distancia = 24 - pos_origen
-            else:
-                distancia = pos_origen + 1
-            dados = self.get_dados()
-            if distancia == dados:
-                tablero[pos_origen].pop(ficha)
-                self.usar_dados(distancia)
