@@ -88,3 +88,12 @@ class Backgammongame():
                 destino = 24 - dado  #Si la ficha es negra, entra de la posicion 24 al 19
         self.__board__.devolver_ficha_comida(ficha, destino)
         self.usar_dados(dado)
+
+    def ganador(self):
+        if self.__board__.sin_fichas(self.__player1__.get_ficha()):
+            return self.__player1__.get_nombre()
+        elif self.__board__.sin_fichas(self.__player2__.get_ficha()):
+            return self.__player2__.get_nombre()
+        else:
+            return None
+         

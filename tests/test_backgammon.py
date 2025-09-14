@@ -147,3 +147,20 @@ class TestBackgammon(unittest.TestCase):
         self.assertEqual(game.dados_restantes(), [5])
         self.assertEqual(game.get_board().mostrar_tablero()[22], ["Negras"])
         self.assertEqual(game.get_banco()["Negras"], 0)
+
+    def test_ganador_blncas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24  
+        self.assertEqual(game.ganador(), "Mar")  
+
+    def test_ganador_negras(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__[5] = None
+        game.get_board().__tablero__[7] = None
+        game.get_board().__tablero__[12] = None  
+        game.get_board().__tablero__[23] = None    
+        self.assertEqual(game.ganador(), "Franco")  
+
+    def test_no_hay_ganador(self):
+        game = Backgammongame("Mar", "Franco")
+        self.assertIsNone(game.ganador(), "Blancas")
