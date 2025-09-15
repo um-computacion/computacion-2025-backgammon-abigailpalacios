@@ -27,11 +27,13 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Se implemento el metodo `reingresar_ficha` en la clase `Backgammon`
 - Se implemento el metodo `gaandor` en la clase `Backgammon`
 - Se implemento el metodo `posicioines` en la clase `Backgammon`, para permitir retirar una ficha 
+- Se implemento el metodo `retirar_ficha`, la cual saca definitivamente a una ficha del tablero
 
 ### Fixed
 
 - Habian lineas en las clases `Board` y `Dice` que no eran testeadas
 - En el metodo `devolver_ficha_comida` no se respetaba que si se encontaba una sola ficha en cierta posicion, el oponene que se encontraba esperando a sacar la ficha del banco, podia comer a su rival 
+- Se corrigio el metodo `retirar_ficha`, que solo verificaba que una ficha podia ser retirada si el dado coincidia exactamente con la distancia que le faltaba a la ficha para salir
 
 ### Removed
 

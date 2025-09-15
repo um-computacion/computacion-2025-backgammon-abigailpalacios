@@ -220,7 +220,10 @@ class TestBackgammon(unittest.TestCase):
 
     def test_excepcion_sin_dados(self):
         game = Backgammongame("Mar", "Franco")
-        self.assertRaises(ValueError, game.retirar_ficha, 22)
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[23] = ["Blancas"] 
+        self.assertRaises(ValueError, game.retirar_ficha, 23)
+
 
     def test_excepcion_sin_ficha(self):
         game = Backgammongame("Mar", "Franco")
@@ -228,5 +231,79 @@ class TestBackgammon(unittest.TestCase):
         game.__dice__.__movimiento__ = [2]
         self.assertRaises(ValueError, game.retirar_ficha, 22)
 
+    def test_retirar_dado_exacto_blancas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[20] = ["Blancas"] 
+        game.__dice__.__movimiento__ = [4]
+        game.retirar_ficha(20)
+        self.assertEqual(game.get_board().mostrar_tablero()[20], None)
 
-    
+    def test_retirar_dado_exacto_negras(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno()
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[3] = ["Negras"] 
+        game.__dice__.__movimiento__ = [4]
+        game.retirar_ficha(3)
+        self.assertEqual(game.get_board().mostrar_tablero()[3], None)
+
+    def test_retirar_dado_mayor_blancas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[20] = ["Blancas"] 
+        game.__dice__.__movimiento__ = [6]
+        game.retirar_ficha(20)
+        self.assertEqual(game.get_board().mostrar_tablero()[20], None)
+
+    def test_retirar_dado_menor_blancas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[20] = ["Blancas"] 
+        game.__dice__.__movimiento__ = [2]
+        self.assertRaises(ValueError, game.retirar_ficha, 20)
+
+    def test_retirar_dado_mayor_negras(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno()
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[3] = ["Negras"] 
+        game.__dice__.__movimiento__ = [6]
+        game.retirar_ficha(3)
+        self.assertEqual(game.get_board().mostrar_tablero()[3], None)
+
+    def test_retirar_dado_menor_negras(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno()
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[3] = ["Negras"] 
+        game.__dice__.__movimiento__ = [2]
+        self.assertRaises(ValueError, game.retirar_ficha, 3)
+
+    def test_retirar_excepcion_ficha_mayor_blancas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[20] = ["Blancas"] 
+        game.get_board().__tablero__[22] = ["Blancas"] 
+        game.__dice__.__movimiento__ = [6]
+        self.assertRaises(ValueError, game.retirar_ficha, 22)
+
+    def test_etirar_excepcion_ficha_mayor_negras(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno()
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[3] = ["Negras"] 
+        game.get_board().__tablero__[1] = ["Negras"] 
+        game.__dice__.__movimiento__ = [6]
+        self.assertRaises(ValueError,game.retirar_ficha, 1)
+
+    def test_if_limpia_casilla_ejecucion(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[20] = ["Blancas"]
+        game.__dice__.__movimiento__ = [4]  # distancia desde 20
+        game.retirar_ficha(20)
+        self.assertIsNone(game.get_board().mostrar_tablero()[20])  # Línea 146–147
+
+if __name__ == '__main__':
+    unittest.main()

@@ -142,6 +142,7 @@ class Backgammongame():
                     raise ValueError("El dado no permite retirar esta ficha")
                 tablero[pos_origen].pop()
                 self.usar_dados(dado_usado)
-
             if not tablero[pos_origen]:
                 tablero[pos_origen] = None
+
+
