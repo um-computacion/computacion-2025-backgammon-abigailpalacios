@@ -114,19 +114,34 @@ class Backgammongame():
     def retirar_ficha(self, pos_origen):
             ficha = self.get_ficha()
             tablero = self.__board__.mostrar_tablero()
+            dado = self.get_dados()
             if self.banco[ficha] > 0: #Si tengo fichas en el banco, no puedo mover las fichas
                 raise ValueError("Retirar fichas en el banco antes de continuar")
             if self.posiciones_finales() is False: # Si todas las fichas no se encuentran en las posiciones finales, no se pueden retirar fichas
                 raise ValueError("Todas las fichas deben estar en el ultimo cuadrante para retirar")
-            if self.dados_restantes() == []: #Si no hay dados para usar, no se puede mover
+            if not dado: #Si no hay dados para usar, no se puede mover
                 raise ValueError("Movimiento de dado no disponible")
             if tablero[pos_origen] is None or ficha not in tablero[pos_origen]: #Si no se encuentra fichas en la posicion de origen o la ficha a mover no esta en la posicion, no se puede retirar
                 raise ValueError("No hay fichas disponibles para retirar")
             if ficha == "Blancas":
                 distancia = 24 - pos_origen
+                distancia_lejana = range(18, pos_origen)
             else:
                 distancia = pos_origen + 1
-            dados = self.get_dados()
-            if distancia == dados:
-                tablero[pos_origen].pop(ficha)
-                self.usar_dados(distancia)
+                distancia_lejana = range(pos_origen + 1, 6)
+
+            if distancia in dado: #Si coincide la distancia con alguno de los dos dados, se puede retirar la ficha
+                dado_usado = distancia
+                tablero[pos_origen].pop()
+                self.usar_dados(dado_usado)
+            else:
+                if any(tablero[i] and ficha in tablero[i] for i in distancia_lejana): #Verifica que no hayan fichas mas lejanas que la que se quiere retirar, si las hay, no se puede retirar la ficha actual con un dado mayor a la distancia
+                    raise ValueError("No se puede retirar: hay fichas más lejanas")
+                dado_usado = next((d for d in dado if d > distancia), None) #Busca el primer valor del dado, que sea mayor a la distancia que necesita la ficha para salir
+                if dado_usado is None:  # Si no hay un valor mayor en el dado, no se puede retirar la ficha
+                    raise ValueError("El dado no permite retirar esta ficha")
+                tablero[pos_origen].pop()
+                self.usar_dados(dado_usado)
+
+            if not tablero[pos_origen]:
+                tablero[pos_origen] = None

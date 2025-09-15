@@ -202,3 +202,31 @@ class TestBackgammon(unittest.TestCase):
         game.get_board().__tablero__[3] = ["Negras"] * 7
         game.get_board().__tablero__[2] = ["Negras"] * 4
         self.assertFalse(game.posiciones_finales())
+
+    def test_retirar_excepcion_banco(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno()
+        game.get_banco()["Negras"] = 2
+        self.assertRaises(ValueError, game.retirar_ficha, 2)
+
+    def test_retirar_excepcion_posicion_final(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno()
+        game.get_board().__tablero__[15] = ["Negras"] * 2
+        game.get_board().__tablero__[4] = ["Negras"] * 2
+        game.get_board().__tablero__[3] = ["Negras"] * 7
+        game.get_board().__tablero__[2] = ["Negras"] * 4
+        self.assertRaises(ValueError, game.retirar_ficha, 2)
+
+    def test_excepcion_sin_dados(self):
+        game = Backgammongame("Mar", "Franco")
+        self.assertRaises(ValueError, game.retirar_ficha, 22)
+
+    def test_excepcion_sin_ficha(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.__dice__.__movimiento__ = [2]
+        self.assertRaises(ValueError, game.retirar_ficha, 22)
+
+
+    
