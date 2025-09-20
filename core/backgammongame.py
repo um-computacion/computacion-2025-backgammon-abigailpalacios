@@ -145,4 +145,3 @@ class Backgammongame():
             if not tablero[pos_origen]:
                 tablero[pos_origen] = None
 
-
