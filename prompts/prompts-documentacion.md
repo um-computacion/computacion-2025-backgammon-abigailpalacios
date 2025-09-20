@@ -1,5 +1,7 @@
 # Promps Documentacion
 
+## Prompt 1
+
 **Herramienta utilizada:**
 - Chat GPT (GPT-5)
 
@@ -11,9 +13,8 @@
 
 Un **changelog** es un documento donde vas registrando los cambios que le vas haciendo a tu proyecto de software. Su función es dejar claro **qué se agregó, qué se corrigió, qué se quitó o qué se modificó**, versión por versión.
 
----
 
-### 📌 Estructura típica de un CHANGELOG
+ 📌 Estructura típica de un CHANGELOG
 
 1. **Título y breve introducción**
    Ejemplo:
@@ -93,6 +94,8 @@ Tu `CHANGELOG.md` debería tener:
 * `CHANGELOG.md`
 
 ---
+
+## Prompt 2
 
 **Texto exacto del Prompt:**
 - "como deberia quedar un readme correcto y bien prolijo y lindo"
@@ -240,6 +243,10 @@ Consulta el archivo [LICENSE](LICENSE) para más información.
 
 **Referencia:**
 * `README.md`
+
+---
+
+## Prompt 3
 
 **Texto exacto del Prompt:**
 - "dime como debo hacer los promps, que estructura deben tener, que deben contener, teniendo en cuenta que los promps son: desarrollo, testing y documentacion"

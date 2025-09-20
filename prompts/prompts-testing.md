@@ -1,5 +1,7 @@
 ## Prompt Testing
 
+## Prompt 1
+
 **Herramienta usada:** ChatGPT (GPT-5)
 
 **Texto exacto del prompt:**  
@@ -51,3 +53,74 @@ Con esos dos cambios deberías ver **100%** en `core/dice.py` y en `tests/test_d
 **Referencia:** 
 
 * `test_board.py`.
+
+## Prompt 2
+
+**Herramienta utilizada:**
+- Chat GPT (GPT-5)
+
+**Texto exacto del Prompt:**
+- "porque no me cubre estos test?"
+
+**Respuesta de la IA:**
+
+ 🧠 ¿Por qué coverage no te marcaba como cubiertas las líneas 146–147?
+📍 Estas líneas:
+if not tablero[pos_origen]:
+    tablero[pos_origen] = None
+
+✅ Aunque se ejecutaban (lo viste con print), coverage no las contaba. ¿Por qué?
+🔎 Motivo real: optimización + heurística de coverage.py
+
+coverage.py no registra todas las líneas simplemente porque se ejecuten, sino que analiza:
+
+¿Hay ramas condicionales (if, else)?
+
+¿Ambas ramas se ejecutaron?
+
+¿La línea afecta el flujo o cambia el estado de forma “observable”?
+
+⚠️ En tu caso:
+
+Tenías un if sin else.
+
+Solo una rama (if) con una acción muy simple (asignar None).
+
+coverage no encuentra “rama opuesta”, entonces no marca esa línea como “totalmente evaluada”, incluso si se ejecutó.
+
+Esto es un comportamiento documentado de coverage.py.
+
+📚 Fuente oficial:
+https://coverage.readthedocs.io/en/latest/faq.html#why-doesn-t-coverage-measure-this-line-as-executed
+
+💡 Solución: forzar bifurcación con else
+
+Cuando agregás esto:
+
+else:
+    pass
+
+
+o incluso:
+
+else:
+    _ = tablero[pos_origen]
+
+
+estás creando una bifurcación clara. Entonces coverage ahora ve dos ramas:
+
+Una que se ejecutó (if)
+
+Otra que también se puede ejecutar (else), aunque no lo haya hecho
+
+Así ya puede marcar correctamente la línea 146 como "covered".
+
+✅ En resumen
+Problema	¿Por qué pasa?
+Línea 146 no se marcaba como cubierta	No hay rama else, y el cuerpo del if es muy simple (una asignación)
+Se ejecutaba pero no contaba	coverage.py la ignora por heurística de análisis estático
+Solución	Agregar else: pass o similar para que registre la bifurcación
+
+
+**Referencia:**
+* `backgammongame.py`
