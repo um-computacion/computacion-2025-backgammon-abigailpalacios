@@ -301,9 +301,58 @@ class TestBackgammon(unittest.TestCase):
         game = Backgammongame("Mar", "Franco")
         game.get_board().__tablero__ = [None] * 24
         game.get_board().__tablero__[20] = ["Blancas"]
-        game.__dice__.__movimiento__ = [4]  # distancia desde 20
+        game.__dice__.__movimiento__ = [4] 
         game.retirar_ficha(20)
-        self.assertIsNone(game.get_board().mostrar_tablero()[20])  # Línea 146–147
+        self.assertIsNone(game.get_board().mostrar_tablero()[20]) 
+    
+    def test_moviminto_posibles_sin_banco(self):
+        game = Backgammongame("Mar", "Franco")
+        game.banco = {"Blancas": 1, "Negras": 0}
+        game.get_board().inicializar()
+        game.__dice__.__movimiento__ = [0, 2]
+        self.assertEqual(game.movimientos_posibles(), {})
+
+    def test_moviminto_posibles_sin_dados(self):
+        game = Backgammongame("Mar", "Franco")
+        game.banco = {"Blancas": 0, "Negras": 0}
+        game.get_board().inicializar()
+        game.__dice__.__movimiento__ = []
+        self.assertEqual(game.movimientos_posibles(), {})
+
+    def test_movimiento_posible_blancas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.banco = {"Blancas": 0, "Negras": 0}
+        game.get_board().inicializar()
+        game.__dice__.__movimiento__ = [3, 6]
+        movimientos_pos = {
+            0: [3, 6],
+            11: [14, 17],
+            16: [19, 22],
+            18: [21]
+        }
+        self.assertEqual(game.movimientos_posibles(), movimientos_pos)
+
+    def test_movimiento_posible_negras(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno()
+        game.banco = {"Blancas": 0, "Negras": 0}
+        game.get_board().inicializar()
+        game.__dice__.__movimiento__ = [3, 6]
+        movimientos_pos = {
+            5: [2],
+            7: [4, 1],
+            12: [9, 6],
+            23: [20, 17]
+        }
+        self.assertEqual(game.movimientos_posibles(), movimientos_pos)
+
+    def test_movimiento_posible_excepcion(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__[5] = ["Blancas"]
+        game.get_board().__tablero__[7] = ["Negras", "Negras"]
+        game.__dice__.__movimiento__ = [2]
+        movimientos = game.movimientos_posibles()
+        self.assertNotIn(5, movimientos)
 
 if __name__ == '__main__':
     unittest.main()

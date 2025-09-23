@@ -14,7 +14,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Removed: borrados en el documento
 - Fixed: arreglos en el documento
 
-## 1.1.0 (Segundo Sprint)
+## 1.3.0 (Tercer Sprint)
+
+### Added
+
+- Se agrego el metodo `movimientos_posibles` en la clase `Backgammon, que permite saber que movimiento le es posible cada ficha para mover
+- Se actualizaron los prompts
+
+## 1.2.0 (Segundo Sprint)
 
 ### Added
 
@@ -39,7 +46,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 - Se elimino el metodo `distancia` que generaba redundancia y provocaba error en los test
 
-## 1.0.0 (Primer Sprint)
+## 1.1.0 (Primer Sprint)
 
 ### Added
 
