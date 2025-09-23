@@ -117,11 +117,11 @@ class Backgammongame():
             dado = self.get_dados()
             if self.banco[ficha] > 0: #Si tengo fichas en el banco, no puedo mover las fichas
                 raise ValueError("Retirar fichas en el banco antes de continuar")
-            if self.posiciones_finales() is False: # Si todas las fichas no se encuentran en las posiciones finales, no se pueden retirar fichas
+            elif self.posiciones_finales() is False: # Si todas las fichas no se encuentran en las posiciones finales, no se pueden retirar fichas
                 raise ValueError("Todas las fichas deben estar en el ultimo cuadrante para retirar")
-            if not dado: #Si no hay dados para usar, no se puede mover
+            elif not dado: #Si no hay dados para usar, no se puede mover
                 raise ValueError("Movimiento de dado no disponible")
-            if tablero[pos_origen] is None or ficha not in tablero[pos_origen]: #Si no se encuentra fichas en la posicion de origen o la ficha a mover no esta en la posicion, no se puede retirar
+            elif tablero[pos_origen] is None or ficha not in tablero[pos_origen]: #Si no se encuentra fichas en la posicion de origen o la ficha a mover no esta en la posicion, no se puede retirar
                 raise ValueError("No hay fichas disponibles para retirar")
             if ficha == "Blancas":
                 distancia = 24 - pos_origen
@@ -143,5 +143,36 @@ class Backgammongame():
                 tablero[pos_origen].pop()
                 self.usar_dados(dado_usado)
             if not tablero[pos_origen]:
-                tablero[pos_origen] = None
+                tablero[pos_origen] = None #Si no quedan fichas en esa posicion, la dejamos vacia
+
+
+    def movimientos_posibles(self):
+        ficha = self.get_ficha()
+        tablero = self.__board__.mostrar_tablero()
+        dados = self.get_dados()
+        movimientos = {}
+
+        if self.banco[ficha] > 0 :  #Si hay fichas en el banco, no se puede mover, solo reingresar fichas
+            return movimientos
+        
+        if not dados:   # Si no hay dados para mover, no se puede mover
+            return movimientos
+
+        for origen in range(24):
+            if tablero[origen] and ficha in tablero[origen]: #Se busca en el tablero que fichas tengo y si se pueden mover
+                destinos = []
+                for dado in dados:
+                    if ficha == "Blancas" :
+                        destino = origen + dado  #Si la ficha es blanca, avanza de 0 a 23
+                    else :
+                        destino = origen - dado #Si la ficha es negra, avanza de 23 a 0
+                    if 0 <= destino <= 23: #Verificamos que el destino este dentro del rango del tablero
+                        try:
+                            self.__board__.validar_movimiento(destino, origen, ficha) #Validamos el movimiento desde board
+                            destinos.append(destino) #Si se valida el movimiento, se agrega a la lista de destinos posibles
+                        except ValueError:
+                            continue  #Saltamos al siguiente dado en caso de obtener un error
+                if destinos:
+                    movimientos[origen] = destinos #guardamos los movimientos validos en movimientos
+        return movimientos
 
