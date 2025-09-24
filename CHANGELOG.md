@@ -18,8 +18,12 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ### Added
 
-- Se agrego el metodo `movimientos_posibles` en la clase `Backgammon, que permite saber que movimiento le es posible cada ficha para mover
+- Se agrego el metodo `movimientos_posibles` en la clase `Backgammon`, que permite saber que movimiento le es posible cada ficha para mover
 - Se actualizaron los prompts
+
+### Fixed
+
+- En el metodo  `movimientos_posibles` no se tenia en cuenta si la ficha salia del tablero 
 
 ## 1.2.0 (Segundo Sprint)
 
