@@ -162,16 +162,30 @@ class Backgammongame():
             if tablero[origen] and ficha in tablero[origen]: #Se busca en el tablero que fichas tengo y si se pueden mover
                 destinos = []
                 for dado in dados:
+                    
                     if ficha == "Blancas" :
                         destino = origen + dado  #Si la ficha es blanca, avanza de 0 a 23
+                        if destino > 23 and self.posiciones_finales(): #Si la posicion destino es mayor a 23 y todas las fichas estan en posiciones finales, se puede retirar la ficha
+                            if all(not tablero[pos] or ficha not in tablero[pos] for pos in range(origen + 1, 24)):
+                                destinos.append("retirar")
+                        elif 0 <= destino <= 23: #Verificamos que el destino este dentro del rango del tablero
+                            try:
+                                self.__board__.validar_movimiento(destino, origen, ficha) #Validamos el movimiento desde board
+                                destinos.append(destino) #Si se valida el movimiento, se agrega a la lista de destinos posibles
+                            except ValueError:
+                                continue  #Saltamos al siguiente dado en caso de obtener un error
+                    
                     else :
                         destino = origen - dado #Si la ficha es negra, avanza de 23 a 0
-                    if 0 <= destino <= 23: #Verificamos que el destino este dentro del rango del tablero
-                        try:
-                            self.__board__.validar_movimiento(destino, origen, ficha) #Validamos el movimiento desde board
-                            destinos.append(destino) #Si se valida el movimiento, se agrega a la lista de destinos posibles
-                        except ValueError:
-                            continue  #Saltamos al siguiente dado en caso de obtener un error
+                        if destino < 0 and self.posiciones_finales(): #Si la posicion destino es menor a 0 y todas las fichas estan en posiciones finales, se puede retirar la ficha
+                            if all(not tablero[pos] or ficha not in tablero[pos] for pos in range(0, origen)):
+                                destinos.append("retirar")
+                        elif 0 <= destino <= 23: #Verificamos que el destino este dentro del rango del tablero
+                            try:
+                                self.__board__.validar_movimiento(destino, origen, ficha) #Validamos el movimiento desde board
+                                destinos.append(destino) #Si se valida el movimiento, se agrega a la lista de destinos posibles
+                            except ValueError:
+                                continue  #Saltamos al siguiente dado en caso de obtener un error
                 if destinos:
                     movimientos[origen] = destinos #guardamos los movimientos validos en movimientos
         return movimientos

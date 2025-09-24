@@ -354,5 +354,47 @@ class TestBackgammon(unittest.TestCase):
         movimientos = game.movimientos_posibles()
         self.assertNotIn(5, movimientos)
 
+    def test_movimiento_posible_blancas_retiran(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[19] = ["Blancas"] 
+        game.__dice__.__movimiento__ = [5]
+        movimientos_pos = {19: ["retirar"]}
+        self.assertEqual(game.movimientos_posibles(), movimientos_pos)
+
+    def test_movimiento_posible_negras_retiran(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno()
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[4] = ["Negras"] 
+        game.__dice__.__movimiento__ = [5]
+        movimientos_pos = {4: ["retirar"]}
+        self.assertEqual(game.movimientos_posibles(), movimientos_pos)
+
+    def test_movimiento_invalido_blancas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[0] = ["Blancas"]
+        game.get_board().__tablero__[5] = ["Negras", "Negras"]  
+        game.__dice__.__movimiento__ = [5]
+        movimientos = game.movimientos_posibles()
+        self.assertEqual(movimientos, {}) 
+
+    def test_movimiento_invalido_negras(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno()
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[5] = ["Blancas", "Blancas"]
+        game.get_board().__tablero__[10] = ["Negras"]  
+        game.__dice__.__movimiento__ = [5]
+        self.assertEqual( game.movimientos_posibles(), {}) 
+
+    def test_ficha_invalida(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[4] = ["Rosa"] 
+        game.__dice__.__movimiento__ = [2]
+        self.assertEqual(game.movimientos_posibles(), {})
+
 if __name__ == '__main__':
     unittest.main()
