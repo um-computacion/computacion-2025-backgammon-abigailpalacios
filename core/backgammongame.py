@@ -190,4 +190,40 @@ class Backgammongame():
                     movimientos[origen] = destinos #guardamos los movimientos validos en movimientos
         return movimientos
 
-    
+    def reingreso_posible(self):
+
+        ficha = self.get_ficha()
+        tablero = self.__board__.mostrar_tablero()
+        dados = self.get_dados()
+        reingresar = {}
+
+        if self.banco[ficha] == 0:  
+            return reingresar
+        
+        if not dados:
+            return reingresar
+        
+        des_pos = []
+
+        for dado in dados:
+            
+            if ficha == "Blancas":
+                destino = dado - 1
+
+            else:
+                destino = 24 - dado
+
+            if tablero[destino] is None:
+                des_pos.append(destino)
+
+            elif tablero[destino] and tablero[destino][0] == ficha:
+                des_pos.append(destino)
+
+            elif tablero[destino] and len(tablero[destino]) == 1 and tablero[destino][0] != ficha:
+                des_pos.append(destino)
+
+        if des_pos:
+            reingresar["reingresa"] = des_pos
+
+        return reingresar        
+
