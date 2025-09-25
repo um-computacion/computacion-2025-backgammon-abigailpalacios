@@ -422,5 +422,22 @@ class TestBackgammon(unittest.TestCase):
         posible = {19: [22], 21: ["retirar"]}
         self.assertEqual(game.movimientos_posibles(), posible)
 
+    def test_banco_sin_fichas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.banco = {"Blancas": 0, "Negras": 0}
+        self.assertEqual(game.reingreso_posible(), {})
+
+    def test_banco_sin_dados(self):
+        game = Backgammongame("Mar", "Franco")
+        game.__dice__.__movimiento__ = []
+        self.assertEqual(game.reingreso_posible(), {})
+
+    def test_movimiento_posible_blancas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.banco = {"Blancas": 1, "Negras": 0}
+        game.get_board().__tablero__ = [None] * 24
+        game.__dice__.__movimiento__ = [3]
+        self.assertEqual(game.reingreso_posible(), {"reingresa": [2]})
+
 if __name__ == '__main__':
     unittest.main()
