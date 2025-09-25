@@ -396,5 +396,31 @@ class TestBackgammon(unittest.TestCase):
         game.__dice__.__movimiento__ = [2]
         self.assertEqual(game.movimientos_posibles(), {})
 
+    def test_movimiento_posible_blancas_con_fichas_lejanas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[19] = ["Blancas"] 
+        game.get_board().__tablero__[22] = ["Blancas"] 
+        game.__dice__.__movimiento__ = [6]
+        self.assertEqual( game.movimientos_posibles(), {22: ["retirar"]})
+
+    def test_movimiento_posible_negras_con_fichas_lejanas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno()
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[4] = ["Negras"]  
+        game.get_board().__tablero__[1] = ["Negras"]  
+        game.__dice__.__movimiento__ = [6]
+        self.assertEqual( game.movimientos_posibles(), {1: ["retirar"]})
+
+    def test_movimiento_posible_destino_limite_blancas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[21] = ["Blancas"]
+        game.__dice__.__movimiento__ = [3]  
+        game.get_board().__tablero__[19] = ["Blancas"] 
+        posible = {19: [22], 21: ["retirar"]}
+        self.assertEqual(game.movimientos_posibles(), posible)
+
 if __name__ == '__main__':
     unittest.main()
