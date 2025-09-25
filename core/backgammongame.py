@@ -166,7 +166,7 @@ class Backgammongame():
                     if ficha == "Blancas" :
                         destino = origen + dado  #Si la ficha es blanca, avanza de 0 a 23
                         if destino > 23 and self.posiciones_finales(): #Si la posicion destino es mayor a 23 y todas las fichas estan en posiciones finales, se puede retirar la ficha
-                            if all(not tablero[pos] or ficha not in tablero[pos] for pos in range(origen + 1, 24)):
+                            if all(not tablero[pos] or ficha not in tablero[pos] for pos in range(origen + 1, 24)): #Si verifica que no hayan fichas adelante de la cual se quiere retirar
                                 destinos.append("retirar")
                         elif 0 <= destino <= 23: #Verificamos que el destino este dentro del rango del tablero
                             try:
@@ -178,7 +178,7 @@ class Backgammongame():
                     else :
                         destino = origen - dado #Si la ficha es negra, avanza de 23 a 0
                         if destino < 0 and self.posiciones_finales(): #Si la posicion destino es menor a 0 y todas las fichas estan en posiciones finales, se puede retirar la ficha
-                            if all(not tablero[pos] or ficha not in tablero[pos] for pos in range(0, origen)):
+                            if all(not tablero[pos] or ficha not in tablero[pos] for pos in range(0, origen)):  #Si verifica que no hayan fichas adelante de la cual se quiere retirar
                                 destinos.append("retirar")
                         elif 0 <= destino <= 23: #Verificamos que el destino este dentro del rango del tablero
                             try:
@@ -190,3 +190,4 @@ class Backgammongame():
                     movimientos[origen] = destinos #guardamos los movimientos validos en movimientos
         return movimientos
 
+    
