@@ -272,6 +272,15 @@ class TestBackgammon(unittest.TestCase):
         game.retirar_ficha(3)
         self.assertEqual(game.get_board().mostrar_tablero()[3], None)
 
+    def test_retirar_ficha_tablero_queda_con_fichas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[20] = ["Blancas", "Blancas"]
+        game.__dice__.__movimiento__ = [4]
+        game.retirar_ficha(20)
+        self.assertEqual(game.get_board().mostrar_tablero()[20], ["Blancas"])
+        self.assertEqual(len(game.get_board().mostrar_tablero()[20]), 1)
+
     def test_retirar_dado_menor_negras(self):
         game = Backgammongame("Mar", "Franco")
         game.definir_turno()
@@ -438,6 +447,49 @@ class TestBackgammon(unittest.TestCase):
         game.get_board().__tablero__ = [None] * 24
         game.__dice__.__movimiento__ = [3]
         self.assertEqual(game.reingreso_posible(), {"reingresa": [2]})
+
+    def test_mov_pos_blancas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[22] = ["Blancas"]
+        game.get_board().__tablero__[10] = ["Blancas"]
+        game.__dice__.__movimiento__ = [3, 4]
+        self.assertEqual(game.movimientos_posibles(), {10: [13, 14]})
+        
+    def test_negras_dados(self):
+        game = Backgammongame("Mar", "Franco")
+        game.definir_turno()
+        game.banco = {"Blancas": 0, "Negras": 1}
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[23] = ["Blancas", "Blancas"]  
+        game.get_board().__tablero__[22] = ["Blancas", "Blancas"]  
+        game.__dice__.__movimiento__ = [1, 2]
+        self.assertEqual(game.reingreso_posible(), {})
+
+    def test_mov_blancas_sobre_blancas(self):
+        game = Backgammongame("Mar", "Franco")
+        game.banco = {"Blancas": 1, "Negras": 0}
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[2] = ["Blancas", "Blancas"]  
+        game.__dice__.__movimiento__ = [3]
+        self.assertEqual(game.reingreso_posible(), {"reingresa": [2]})
+
+    def test_blanco_come_negro(self):
+        game = Backgammongame("Mar", "Franco")
+        game.banco = {"Blancas": 0, "Negras": 1}
+        game.definir_turno()
+        game.get_board().__tablero__ = [None] * 24
+        game.get_board().__tablero__[21] = [ "Blancas"]
+        game.__dice__.__movimiento__ = [3]
+        self.assertEqual(game.reingreso_posible(), {"reingresa": [21]})
+
+    def test_reingreso_sin_dados_disponibles(self):
+        game = Backgammongame("Mar", "Franco")
+        game.banco = {"Blancas": 1, "Negras": 0}
+        game.__dice__.__movimiento__ = []
+        resultado = game.reingreso_posible()
+        self.assertEqual(resultado, {})
+
 
 if __name__ == '__main__':
     unittest.main()
