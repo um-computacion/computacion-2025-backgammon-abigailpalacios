@@ -196,34 +196,24 @@ class Backgammongame():
         tablero = self.__board__.mostrar_tablero()
         dados = self.get_dados()
         reingresar = {}
-
-        if self.banco[ficha] == 0:  
+        if self.banco[ficha] == 0:  #Si no hay fichas en el banco no se realiza ningun movimiento correspondiente al banco
             return reingresar
-        
-        if not dados:
+        if not dados:  #si no tiene movimientos con el dado, el diccionario queda vacio
             return reingresar
-        
-        des_pos = []
-
+        des_pos = [] 
         for dado in dados:
-            
-            if ficha == "Blancas":
+            if ficha == "Blancas": 
                 destino = dado - 1
-
             else:
                 destino = 24 - dado
-
-            if tablero[destino] is None:
+            if tablero[destino] is None: #Si la posicion de destino no tiene ninguna ficha, puede ingresarla
                 des_pos.append(destino)
-
-            elif tablero[destino] and tablero[destino][0] == ficha:
+            elif tablero[destino] and tablero[destino][0] == ficha: #si en la posicion destino hay una ficha del mismo color se puede colocar en esa posicion
                 des_pos.append(destino)
-
-            elif tablero[destino] and len(tablero[destino]) == 1 and tablero[destino][0] != ficha:
+            elif tablero[destino] and len(tablero[destino]) == 1 and tablero[destino][0] != ficha: #si en la posicion destino solo hay una ficha del oponente, come esa ficha y se asigna esa ficha esa posicion
                 des_pos.append(destino)
-
         if des_pos:
             reingresar["reingresa"] = des_pos
-
         return reingresar        
+
 
