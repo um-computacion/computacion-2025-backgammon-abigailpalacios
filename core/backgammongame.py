@@ -216,4 +216,31 @@ class Backgammongame():
             reingresar["reingresa"] = des_pos
         return reingresar        
 
+    def estado_juego(self):
 
+        if self.ganador():
+            estado_game = "ganado"
+
+        elif self.banco[self.get_ficha()] > 0:
+            estado_game = "reingreso"
+
+        elif self.get_dados() and self.movimientos_posibles():
+            estado_game = "en curso"
+            
+        return {
+            "estado": estado_game,
+            "turno": self.get_turno().get_nombre(),
+            "jugador 1": self.get_player1().get_nombre(),
+            "jugador 2": self.get_player2().get_nombre(),
+            "ficha actual": self.get_ficha(),
+            "dados": self.get_dados(),
+            "tablero": self.get_board().mostrar_tablero(),
+            "banco": self.get_banco(),
+            "movimientos posibles": self.movimientos_posibles(),
+            "reingreso posible": self.reingreso_posible(),
+            "ganador": self.ganador(),
+            "posiciones finales": {
+                "Blancas": self.posiciones_finales("Blancas"),
+                "Negras": self.posiciones_finales("Negras")
+            }
+        }
