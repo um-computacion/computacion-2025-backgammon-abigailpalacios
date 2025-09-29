@@ -490,6 +490,71 @@ class TestBackgammon(unittest.TestCase):
         resultado = game.reingreso_posible()
         self.assertEqual(resultado, {})
 
+    def test_estado_juego(self):
+        game = Backgammongame("Mar", "Franco")
+        game.banco = {"Blancas": 0, "Negras": 0}
+        game.get_board().inicializar() 
+        game.__dice__.__movimiento__ = [2, 3]
+        
+        estado = {
+            "estado": "en curso",
+            "turno": "Mar",
+            "jugador 1": "Mar",
+            "jugador 2": "Franco",
+            "ficha actual": "Blancas",
+            "dados": [2, 3],
+            "tablero": game.get_board().mostrar_tablero(),
+            "banco": {"Blancas": 0, "Negras": 0},
+            "movimientos posibles": game.movimientos_posibles(),
+            "reingreso posible": {},
+            "ganador": None
+        }
+        
+        self.assertEqual(game.estado_juego(), estado)
+
+    def test_estado_juego_ganado(self):
+        game = Backgammongame("Mar", "Franco")
+        game.banco = {"Blancas": 0, "Negras": 0}
+        game.get_board().__tablero__ = [None] * 24 
+        game.__dice__.__movimiento__ = [2, 3]
+        
+        estado = {
+            "estado": "ganado",  
+            "turno": "Mar",
+            "jugador 1": "Mar",
+            "jugador 2": "Franco",
+            "ficha actual": "Blancas",
+            "dados": [2, 3],
+            "tablero": [None] * 24,
+            "banco": {"Blancas": 0, "Negras": 0},
+            "movimientos posibles": {},
+            "reingreso posible": {},
+            "ganador": "Mar"  
+        }
+        
+        self.assertEqual(game.estado_juego(), estado)
+
+    def test_estado_juego_banco(self):
+        game = Backgammongame("Mar", "Franco")
+        game.banco = {"Blancas": 1, "Negras": 0}
+        game.get_board().inicializar() 
+        game.__dice__.__movimiento__ = [2, 3]
+        
+        estado = {
+            "estado": "reingreso",
+            "turno": "Mar",
+            "jugador 1": "Mar",
+            "jugador 2": "Franco",
+            "ficha actual": "Blancas",
+            "dados": [2, 3],
+            "tablero": game.get_board().mostrar_tablero(),
+            "banco": {"Blancas": 1, "Negras": 0},
+            "movimientos posibles": {},
+            "reingreso posible": {"reingresa": [1, 2]},
+            "ganador": None
+        }
+        
+        self.assertEqual(game.estado_juego(), estado)
 
 if __name__ == '__main__':
     unittest.main()

@@ -219,16 +219,16 @@ class Backgammongame():
     def estado_juego(self):
 
         if self.ganador():
-            estado_game = "ganado"
+            estado = "ganado"
 
         elif self.banco[self.get_ficha()] > 0:
-            estado_game = "reingreso"
+            estado = "reingreso"
 
-        elif self.get_dados() and self.movimientos_posibles():
-            estado_game = "en curso"
-            
+        else:
+            estado = "en curso"
+
         return {
-            "estado": estado_game,
+            "estado": estado,
             "turno": self.get_turno().get_nombre(),
             "jugador 1": self.get_player1().get_nombre(),
             "jugador 2": self.get_player2().get_nombre(),
@@ -239,8 +239,4 @@ class Backgammongame():
             "movimientos posibles": self.movimientos_posibles(),
             "reingreso posible": self.reingreso_posible(),
             "ganador": self.ganador(),
-            "posiciones finales": {
-                "Blancas": self.posiciones_finales("Blancas"),
-                "Negras": self.posiciones_finales("Negras")
-            }
         }
