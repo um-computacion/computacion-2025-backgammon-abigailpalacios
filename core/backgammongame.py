@@ -240,3 +240,14 @@ class Backgammongame():
             "reingreso posible": self.reingreso_posible(),
             "ganador": self.ganador(),
         }
+    
+    def mov_posible(self):
+        ficha = self.get_ficha()
+        if self.banco[ficha] > 0:
+            return bool(self.reingreso_posible())
+        return bool(self.movimientos_posibles())
+    
+    def turno_completo(self):
+        if self.get_dados() == [] or not self.mov_posible():
+            return True
+        return False
