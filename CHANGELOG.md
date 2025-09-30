@@ -20,6 +20,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 - Se agrego el metodo `movimientos_posibles` en la clase `Backgammon`, que permite saber que movimiento le es posible cada ficha para mover
 - Se actualizaron los prompts
+- Se han agregado metodos con sus test, que ayudaran al cli 
 
 ### Fixed
 

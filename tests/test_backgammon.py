@@ -556,5 +556,27 @@ class TestBackgammon(unittest.TestCase):
         
         self.assertEqual(game.estado_juego(), estado)
 
+    def test_fin_turno(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().inicializar() 
+        game.__dice__.__movimiento__ = []
+        game.mov_posible() == False
+        self.assertTrue(game.turno_completo())
+
+    def test_fin_turno_false(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().inicializar() 
+        game.__dice__.__movimiento__ = [2, 5]
+        game.mov_posible() == False
+        self.assertFalse(game.turno_completo())
+
+    def test_fin_turno_banco(self):
+        game = Backgammongame("Mar", "Franco")
+        game.get_board().inicializar() 
+        game.banco = {"Blancas": 1, "Negras": 0}
+        game.__dice__.__movimiento__ = []
+        game.mov_posible() == False
+        self.assertTrue(game.turno_completo())
+
 if __name__ == '__main__':
     unittest.main()
