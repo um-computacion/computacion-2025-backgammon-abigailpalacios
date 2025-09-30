@@ -158,8 +158,8 @@ class TestBoard(unittest.TestCase):
         board.inicializar()
         board.banco()
         board.__tablero__[4] = ["Negras"]
-        self.assertTrue(board.ficha_comida("Blanca", 4))
-        self.assertEqual(board.__tablero__[4], ["Blanca"])
+        self.assertTrue(board.ficha_comida("Blancas", 4))
+        self.assertEqual(board.__tablero__[4], ["Blancas"])
         self.assertEqual(board.__banco__["Negras"], 1)
 
     def test_ficha_no_comida(self):
