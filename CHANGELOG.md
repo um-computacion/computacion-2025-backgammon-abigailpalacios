@@ -14,6 +14,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Removed: borrados en el documento
 - Fixed: arreglos en el documento
 
+## 1.4.0 (Cuarto Sprint)
+
+### Added
+
+- Se implementó la interfaz CLI (Command Line Interface) en el archivo `cli/cli.py`
+- Se agregó la función `main()` que permite jugar Backgammon desde la terminal
+
+
 ## 1.3.0 (Tercer Sprint)
 
 ### Added
@@ -92,4 +100,4 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 - Corrección en los métodos `validar_movimiento` y `mover_ficha` para contemplar casos inválidos de destino y origen.  
 - Ajuste en `devolver_ficha_comida` para cubrir casos de fichas del mismo color y del color opuesto.  
-- Agregados tests adicionales en la clase `Board` para incrementar la cobertura hasta 100%.  
+- Agregados tests adicionales en la clase `Board` para incrementar la cobertura hasta 100%.
