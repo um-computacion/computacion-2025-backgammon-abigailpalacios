@@ -251,3 +251,6 @@ class Backgammongame():
         if self.get_dados() == [] or not self.mov_posible():
             return True
         return False
+    
+    def game_over(self):
+        return self.ganador() is not None
