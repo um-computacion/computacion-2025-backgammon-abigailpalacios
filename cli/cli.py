@@ -34,7 +34,36 @@ def main():
                 opcion = int(input("Ingrese su opción: "))
 
                 if opcion == 1:
-                    origen = int(input("Ingrese la posición de origen (1-24): "))
-                    destino = int(input("Ingrese la posición de destino (1-24): "))
-                    Backgammongame.mover_ficha(game, origen, destino)
+                    if not game.movimientos_posibles():
+                        print("No hay movimientos posibles con los dados actuales")
+                        continue
                     
+                    print("Movimientos posibles:")
+                    for origen, destinos in game.movimientos_posibles().items():
+                        print(f"Desde posición {origen + 1}: puede ir a {[d+1 if d != 'retirar' else 'RETIRAR' for d in destinos]}")
+                    
+                    try:
+                        origen = int(input("Ingrese la posición de origen (1-24): ")) - 1  # Convertir a índice 0-23
+                        if origen not in game.movimientos_posibles():
+                            print("No hay movimientos posibles desde esa posición")
+                            continue
+
+                        print(f"Destinos válidos desde posición {origen + 1}: {[d+1 if d != 'retirar' else 'RETIRAR' for d in game.movimientos_posibles()[origen]]}")
+
+                        if "retirar" in game.movimientos_posibles()[origen]:
+                            accion = input("¿Desea mover a una posición (M) o retirar la ficha (R)? ").upper()
+                            if accion == "R":
+                                game.retirar_ficha(origen)
+                                print("Ficha retirada exitosamente!")
+                                continue
+                        
+                        destino = int(input("Ingrese la posición de destino (1-24): ")) - 1  # Convertir a índice 0-23
+                        
+                        # Validar que el destino esté en los movimientos posibles
+                        if destino not in game.movimientos_posibles()[origen]:
+                            print(f"Destino inválido. Solo puede mover a: {[d+1 for d in game.movimientos_posibles()[origen] if d != 'retirar']}")
+                            continue
+                            
+                        game.mover_ficha(origen, destino)
+                        print("Movimiento realizado exitosamente!")
+                        
