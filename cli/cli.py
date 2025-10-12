@@ -19,7 +19,22 @@ def main():
 
     while not Backgammongame.game_over(game):
         player = Backgammongame.get_turno(game)
-        print(f"\n{'='*30}")
+        print(f"{'='*30}")
         print(f"Turno de {Player.get_nombre(player)} ({Player.get_ficha(player)})")
         dice = Backgammongame.tirar_dados(game)
         print(f"Dados: {Backgammongame.get_dados(game)}")
+
+        while Backgammongame.dados_restantes(game):
+            try:
+                Backgammongame.get_board(game).mostrar_tablero()
+                print("Seleccione una opcion: ")
+                print("1. Mover ficha")
+                print("2. Pasar turno (si no hay movimientos posibles)")
+                print("3. Salir del juego")
+                opcion = int(input("Ingrese su opción: "))
+
+                if opcion == 1:
+                    origen = int(input("Ingrese la posición de origen (1-24): "))
+                    destino = int(input("Ingrese la posición de destino (1-24): "))
+                    Backgammongame.mover_ficha(game, origen, destino)
+                    
