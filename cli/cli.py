@@ -1,7 +1,8 @@
 from core.backgammongame import Backgammongame
 from core.player import Player
 from core.board import Board
-from core.dice import Dice  
+from core.dice import Dice
+from core.exceptions import BackgammonException, MovimientoInvalido, SinMovimientos, GameOver
 
 def main():
     
@@ -67,3 +68,42 @@ def main():
                         game.mover_ficha(origen, destino)
                         print("Movimiento realizado exitosamente!")
                         
+                    except MovimientoInvalido as e:
+                        print(f"Movimiento inválido: {e}")
+                    
+                    except ValueError as e:
+                        print(f"Entrada inválida: {e}")
+                    
+                    except BackgammonException as e:
+                        print(f"Error del juego: {e}")
+                
+                elif opcion == 2:
+                    print("Pasando turno...")
+                    Backgammongame.definir_turno(game)
+                    break
+                
+                elif opcion == 3:
+                    print("Saliendo del juego. ¡Hasta luego!")
+                    return
+                
+                else:
+                    print("Opción inválida. Intente nuevamente.")
+
+            except SinMovimientos:
+                print("No hay movimientos disponibles con los dados actuales")
+                Backgammongame.definir_turno(game)
+                break
+            
+            except ValueError:
+                print("Entrada inválida. Por favor ingrese un número.")
+            
+            except BackgammonException as e:
+                print(f"Error del juego: {e}")
+                break
+            
+            except ValueError:
+                print("Entrada inválida. Por favor ingrese un número.")
+            
+            except BackgammonException as e:
+                print(f"Error del juego: {e}")
+
