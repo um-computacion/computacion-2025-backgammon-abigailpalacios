@@ -20,6 +20,23 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 - Se implementó la interfaz CLI (Command Line Interface) en el archivo `cli/cli.py`
 - Se agregó la función `main()` que permite jugar Backgammon desde la terminal
+- Se implementaron excepciones personalizadas en el archivo `core/exceptions.py`
+- Se agregaron las excepciones: `BackgammonException`, `MovimientoInvalido`, `SinMovimientos` y `GameOver`
+- Se implementó el manejo de la opción de sacar fichas del tablero en la CLI
+- Se agregó verificación de fin de partida después de cada movimiento
+
+### Changed
+
+- Se refactorizó el código CLI para seguir una lógica más clara y estructurada
+- Se mejoró la visualización de movimientos posibles en la CLI
+- Se implementó mejor flujo del juego con manejo de turnos y dados restantes
+
+### Fixed
+
+- Se corrigieron las excepciones duplicadas en el manejo de errores de la CLI
+- Se eliminó código redundante en el manejo de excepciones
+- Se arreglaron problemas en el flujo de turnos cuando no hay movimientos posibles
+- Se corrigió la validación de movimientos posibles al inicio de cada turno
 
 
 ## 1.3.0 (Tercer Sprint)
