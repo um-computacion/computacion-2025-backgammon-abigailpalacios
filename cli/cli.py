@@ -5,7 +5,6 @@ from core.dice import Dice
 from core.exceptions import BackgammonException, MovimientoInvalido, SinMovimientos, GameOver
 
 def main():
-    
     print("=" * 50)
     print("Bienvenido al juego 'Backgammon'!")
     print("=" * 50)
@@ -16,94 +15,109 @@ def main():
     player2 = Player(name_player2, "Negras")
     game = Backgammongame(player1, player2)
 
-    board = Backgammongame.get_board(game)
+    try:
+        while not Backgammongame.game_over(game):
+            player = Backgammongame.get_turno(game)
+            print(f"{'='*30}")
+            print(f"Turno de {Player.get_nombre(player)} ({Player.get_ficha(player)})")
+            dice = Backgammongame.tirar_dados(game)
+            print(f"Dados: {Backgammongame.get_dados(game)}")
 
-    while not Backgammongame.game_over(game):
-        player = Backgammongame.get_turno(game)
-        print(f"{'='*30}")
-        print(f"Turno de {Player.get_nombre(player)} ({Player.get_ficha(player)})")
-        dice = Backgammongame.tirar_dados(game)
-        print(f"Dados: {Backgammongame.get_dados(game)}")
 
-        while Backgammongame.dados_restantes(game):
-            try:
-                Backgammongame.get_board(game).mostrar_tablero()
-                print("Seleccione una opcion: ")
-                print("1. Mover ficha")
-                print("2. Pasar turno (si no hay movimientos posibles)")
-                print("3. Salir del juego")
-                opcion = int(input("Ingrese su opción: "))
+            if not game.movimientos_posibles():
+                print("No hay movimientos posibles con los dados actuales")
+                Backgammongame.definir_turno(game)
+                continue
 
-                if opcion == 1:
-                    if not game.movimientos_posibles():
-                        print("No hay movimientos posibles con los dados actuales")
-                        continue
+            while Backgammongame.dados_restantes(game):
+                try:
+                    Backgammongame.get_board(game).mostrar_tablero()
+                    print(f"Turno de {Player.get_nombre(player)} ({Player.get_ficha(player)})")
+                    print(f"Dados disponibles: {Backgammongame.get_dados(game)}")
+                    print("1. Mover ficha")
+                    print("2. Rendirse") 
+                    print("3. Salir del juego")
                     
-                    print("Movimientos posibles:")
-                    for origen, destinos in game.movimientos_posibles().items():
-                        print(f"Desde posición {origen + 1}: puede ir a {[d+1 if d != 'retirar' else 'RETIRAR' for d in destinos]}")
-                    
-                    try:
-                        origen = int(input("Ingrese la posición de origen (1-24): ")) - 1  # Convertir a índice 0-23
-                        if origen not in game.movimientos_posibles():
-                            print("No hay movimientos posibles desde esa posición")
+                    opcion = int(input("Ingrese una opcion: "))
+
+                    if opcion == 1:
+                        movimientos = game.movimientos_posibles()
+                        if not movimientos:
+                            print("No hay movimientos posibles con los dados actuales")
+                            break
+                        
+                        print("Movimientos posibles:")
+                        for origen, destinos in movimientos.items():
+                            print(f" Desde posicion {origen + 1}: → {[d+1 if d != 'retirar' else 'SACAR' for d in destinos]}")
+                        
+                        origen = int(input("Mover ficha desde (1-24): ")) - 1
+
+                        if origen < 0 or origen > 23:
+                            print("Posición invalida. Debe estar entre 1 y 24")
+                            continue
+                            
+                        if origen not in movimientos:
+                            print("No hay movimientos posibles desde esa posicion")
                             continue
 
-                        print(f"Destinos válidos desde posición {origen + 1}: {[d+1 if d != 'retirar' else 'RETIRAR' for d in game.movimientos_posibles()[origen]]}")
-
-                        if "retirar" in game.movimientos_posibles()[origen]:
-                            accion = input("¿Desea mover a una posición (M) o retirar la ficha (R)? ").upper()
-                            if accion == "R":
+                        destinos_validos = movimientos[origen]
+                        if "retirar" in destinos_validos:
+                            accion = input("¿Desea mover a una posicion (M) o sacar ficha (S)? ").upper()
+                            if accion == "S":
                                 game.retirar_ficha(origen)
-                                print("Ficha retirada exitosamente!")
+                                print(f"Ficha sacada desde posicion {origen + 1}")
                                 continue
                         
-                        destino = int(input("Ingrese la posición de destino (1-24): ")) - 1  # Convertir a índice 0-23
-                        
-                        # Validar que el destino esté en los movimientos posibles
-                        if destino not in game.movimientos_posibles()[origen]:
-                            print(f"Destino inválido. Solo puede mover a: {[d+1 for d in game.movimientos_posibles()[origen] if d != 'retirar']}")
+                        destino = int(input("Hasta (1-24): ")) - 1
+            
+                        if destino < 0 or destino > 23:
+                            print("Posicion invalida. Debe estar entre 1 y 24")
+                            continue
+                            
+                        if destino not in destinos_validos:
+                            destinos_mostrar = [d+1 for d in destinos_validos if d != 'retirar']
+                            print(f"Destino invalido. Solo puede mover a: {destinos_mostrar}")
                             continue
                             
                         game.mover_ficha(origen, destino)
-                        print("Movimiento realizado exitosamente!")
-                        
-                    except MovimientoInvalido as e:
-                        print(f"Movimiento inválido: {e}")
+                        print(f"Ficha movida de {origen + 1} a {destino + 1}")
                     
-                    except ValueError as e:
-                        print(f"Entrada inválida: {e}")
+                    elif opcion == 2:
+                        print(f"{Player.get_nombre(player)} se ha rendido")
+                        print("¡Gracias por jugar!")
+                        return
                     
-                    except BackgammonException as e:
-                        print(f"Error del juego: {e}")
-                
-                elif opcion == 2:
-                    print("Pasando turno...")
-                    Backgammongame.definir_turno(game)
-                    break
-                
-                elif opcion == 3:
-                    print("Saliendo del juego. ¡Hasta luego!")
-                    return
-                
-                else:
-                    print("Opción inválida. Intente nuevamente.")
+                    elif opcion == 3:
+                        print("Juego finalizado por el usuario")
+                        print("¡Hasta luego!")
+                        return
+                    
+                    else:
+                        print("Opcion invalida. Intente nuevamente.")
+                        continue
+                    
+                    if Backgammongame.game_over(game):
+                        print(f"¡El juego ha terminado!")
+                        winner = game.get_ganador() if hasattr(game, 'get_ganador') else None
+                        if winner:
+                            print(f"Ganador: {Player.get_nombre(winner)} ({Player.get_ficha(winner)})")
+                        return
 
-            except SinMovimientos:
-                print("No hay movimientos disponibles con los dados actuales")
-                Backgammongame.definir_turno(game)
-                break
+                except MovimientoInvalido as e:
+                    print(f"Movimiento invalido: {e}")
+                except ValueError:
+                    print("Entrada invalida.")
+                except BackgammonException as e:
+                    print(f"Error del juego: {e}")
             
-            except ValueError:
-                print("Entrada inválida. Por favor ingrese un número.")
-            
-            except BackgammonException as e:
-                print(f"Error del juego: {e}")
-                break
-            
-            except ValueError:
-                print("Entrada inválida. Por favor ingrese un número.")
-            
-            except BackgammonException as e:
-                print(f"Error del juego: {e}")
+            # Cambiar turno cuando se agoten los dados
+            Backgammongame.definir_turno(game)
+        
+        print("¡Juego terminado!")
+        
+    except Exception as e:
+        print(f"Error inesperado: {e}")
+
+if __name__ == "__main__":
+    main()
 
