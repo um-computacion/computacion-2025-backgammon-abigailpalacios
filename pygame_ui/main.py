@@ -2,6 +2,7 @@ from logging import root
 import pygame
 import tkinter as tk
 from tkinter import simpledialog
+from board import Tablero
 
 def get_player_input():
     def submit():
@@ -40,8 +41,12 @@ def main():
     player1, player2 = get_player_input()
 
     pygame.init()
-    screen = pygame.display.set_mode((800, 600))  #ventana de 800x600
-    pygame.display.set_caption(f"Backgammon - {player1} vs {player2}")  #titulo con nombres
+    screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption(f"Backgammon - {player1} vs {player2}")
+    
+    # Crear el tablero
+    tablero = Tablero()
+    
     running = True
 
     while running:
@@ -49,8 +54,9 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        screen.fill((0, 0, 0))  #pinta la pantalla de negro
-        pygame.display.flip()  #actualiza la pantalla
+        # Dibujar el tablero en lugar de pantalla negra
+        tablero.dibujar(screen)
+        pygame.display.flip()
 
     pygame.quit()
 
