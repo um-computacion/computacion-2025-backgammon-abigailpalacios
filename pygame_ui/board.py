@@ -1,37 +1,50 @@
 import pygame
 
 class Tablero:
-    def __init__(self, ancho=800, alto=600):
+    def __init__(self, ancho=1200, alto=600):
         self.ancho = ancho
         self.alto = alto
-        
-        # Colores
-        self.color_fondo = (139, 69, 19)  # Marrón
-        self.triangulo_claro = (245, 222, 179)  # Trigo
-        self.triangulo_oscuro = (160, 82, 45)  # Marrón silla
-        self.color_borde = (101, 67, 33)  # Marrón oscuro
-        
-        # Diseño del tablero
-        self.ancho_triangulo = 50
-        self.alto_triangulo = 200
+        self.color_fondo = (222, 184, 135)  # Beige más claro
+        self.color_borde = (101, 67, 33)  # Marrón muy oscuro
         self.ancho_barra = 60
+        self.color_triangulo_claro = (245, 222, 179)  # Wheat
+        self.color_triangulo_oscuro = (139, 69, 19)   # Saddle Brown
+        self.ancho_triangulo = 80
+        self.alto_triangulo = 200
+        
+    def dibujar_triangulo(self, pantalla, x, y, ancho, alto, color, hacia_abajo=True):
+        if hacia_abajo:
+            puntos = [(x, y), (x + ancho//2, y + alto), (x + ancho, y)]
+        else:
+            puntos = [(x, y + alto), (x + ancho//2, y), (x + ancho, y + alto)]
+        pygame.draw.polygon(pantalla, color, puntos)
+        pygame.draw.polygon(pantalla, self.color_borde, puntos, 2)
         
     def dibujar(self, pantalla):
-        # Rellenar fondo
         pantalla.fill(self.color_fondo)
-        
-        # Dibujar borde
         pygame.draw.rect(pantalla, self.color_borde, 
-                        (0, 0, self.ancho, self.alto), 5)
-
+                        (0, 0, self.ancho, self.alto), 3)
+        
         # Dibujar barra central
         barra_x = self.ancho // 2 - self.ancho_barra // 2
         pygame.draw.rect(pantalla, self.color_borde,
-                        (barra_x, 50, self.ancho_barra, self.alto - 100))
-    
+                        (barra_x, 0, self.ancho_barra, self.alto))
+        
+        # Dibujar los primeros 6 triángulos alternando colores (posiciones 1-6, lado derecho superior)
+        inicio_x = barra_x + self.ancho_barra + 10
+        espacio_disponible = self.ancho - inicio_x - 20  # Espacio hasta el borde derecho
+        self.ancho_triangulo = espacio_disponible // 6
+        
+        for i in range(6):
+            x = inicio_x + i * self.ancho_triangulo
+            # Alternar colores: par = claro, impar = oscuro
+            color = self.color_triangulo_claro if i % 2 == 0 else self.color_triangulo_oscuro
+            self.dibujar_triangulo(pantalla, x, 3, self.ancho_triangulo, self.alto_triangulo, 
+                                 color, hacia_abajo=True)
+
 if __name__ == "__main__":
     pygame.init()
-    pantalla = pygame.display.set_mode((800, 600))
+    pantalla = pygame.display.set_mode((1200, 600))
     pygame.display.set_caption("Tablero de Backgammon")
     
     tablero = Tablero()
