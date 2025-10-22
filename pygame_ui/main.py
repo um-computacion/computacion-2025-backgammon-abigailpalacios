@@ -41,7 +41,7 @@ def main():
     player1, player2 = get_player_input()
 
     pygame.init()
-    screen = pygame.display.set_mode((800, 600))
+    screen = pygame.display.set_mode((1200, 600))
     pygame.display.set_caption(f"Backgammon - {player1} vs {player2}")
     
     # Crear el tablero
