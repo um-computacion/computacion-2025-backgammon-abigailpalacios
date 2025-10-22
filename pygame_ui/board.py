@@ -24,22 +24,21 @@ class Tablero:
         pantalla.fill(self.color_fondo)
         pygame.draw.rect(pantalla, self.color_borde, 
                         (0, 0, self.ancho, self.alto), 3)
-        
-        # Dibujar barra central
-        barra_x = self.ancho // 2 - self.ancho_barra // 2
+        barra_x = self.ancho // 2 - self.ancho_barra // 2  #barra central
         pygame.draw.rect(pantalla, self.color_borde,
                         (barra_x, 0, self.ancho_barra, self.alto))
-        
-        # Dibujar los primeros 6 triángulos alternando colores (posiciones 1-6, lado derecho superior)
-        inicio_x = barra_x + self.ancho_barra + 10
-        espacio_disponible = self.ancho - inicio_x - 20  # Espacio hasta el borde derecho
-        self.ancho_triangulo = espacio_disponible // 6
-        
+        espacio_lado = (barra_x - 20) // 6  # Espacio para 6 triángulos en cada lado
+        inicio_x_derecho = barra_x + self.ancho_barra + 10 #dibujar triángulos arriba derecha
         for i in range(6):
-            x = inicio_x + i * self.ancho_triangulo
-            # Alternar colores: par = claro, impar = oscuro
+            x = inicio_x_derecho + i * espacio_lado
             color = self.color_triangulo_claro if i % 2 == 0 else self.color_triangulo_oscuro
-            self.dibujar_triangulo(pantalla, x, 3, self.ancho_triangulo, self.alto_triangulo, 
+            self.dibujar_triangulo(pantalla, x, 3, espacio_lado, self.alto_triangulo, 
+                                 color, hacia_abajo=True)
+        inicio_x_izquierdo = 10 #dibujar triángulos arriba izquierda
+        for i in range(6):
+            x = inicio_x_izquierdo + i * espacio_lado
+            color = self.color_triangulo_claro if i % 2 == 0 else self.color_triangulo_oscuro
+            self.dibujar_triangulo(pantalla, x, 3, espacio_lado, self.alto_triangulo, 
                                  color, hacia_abajo=True)
 
 if __name__ == "__main__":
