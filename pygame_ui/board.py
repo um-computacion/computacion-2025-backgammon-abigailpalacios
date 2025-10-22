@@ -41,6 +41,12 @@ class Tablero:
             self.dibujar_triangulo(pantalla, x, 3, espacio_lado, self.alto_triangulo, 
                                  color, hacia_abajo=True)
 
+        for i in range(6):  #triángulos abajo izquierda
+            x = inicio_x_izquierdo + i * espacio_lado
+            color = self.color_triangulo_oscuro if i % 2 == 0 else self.color_triangulo_claro
+            self.dibujar_triangulo(pantalla, x, self.alto - self.alto_triangulo - 3, espacio_lado, self.alto_triangulo, 
+                                 color, hacia_abajo=False)
+
 if __name__ == "__main__":
     pygame.init()
     pantalla = pygame.display.set_mode((1200, 600))
