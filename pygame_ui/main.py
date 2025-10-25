@@ -54,7 +54,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        # Dibujar el tablero en lugar de pantalla negra
+        # Dibujar el tablero con fichas blancas
         tablero.dibujar(screen)
         pygame.display.flip()
 

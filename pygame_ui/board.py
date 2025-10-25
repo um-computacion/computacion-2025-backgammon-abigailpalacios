@@ -10,7 +10,10 @@ class Tablero:
         self.color_triangulo_claro = (245, 222, 179)  # Wheat
         self.color_triangulo_oscuro = (139, 69, 19)   # Saddle Brown
         self.ancho_triangulo = 80
-        self.alto_triangulo = 200
+        self.alto_triangulo = 250
+        self.color_ficha_blanca = (255, 255, 255)  # Blanco
+        self.color_borde_ficha = (0, 0, 0)  # Negro para bordes
+        self.radio_ficha = 18
         
     def dibujar_triangulo(self, pantalla, x, y, ancho, alto, color, hacia_abajo=True):
         if hacia_abajo:
@@ -20,6 +23,19 @@ class Tablero:
         pygame.draw.polygon(pantalla, color, puntos)
         pygame.draw.polygon(pantalla, self.color_borde, puntos, 2)
         
+    def dibujar_ficha(self, pantalla, x, y, color):
+        pygame.draw.circle(pantalla, color, (x, y), self.radio_ficha)
+        pygame.draw.circle(pantalla, self.color_borde_ficha, (x, y), self.radio_ficha, 2)
+    
+    def dibujar_fichas_en_triangulo(self, pantalla, triangulo_x, triangulo_y, ancho_triangulo, cantidad, color, hacia_abajo=True):
+        centro_x = triangulo_x + ancho_triangulo // 2
+        for i in range(cantidad):
+            if hacia_abajo:
+                ficha_y = triangulo_y + 25 + (i * (self.radio_ficha * 2 + 2))
+            else:
+                ficha_y = triangulo_y + self.alto_triangulo - 25 - (i * (self.radio_ficha * 2 + 2))
+            self.dibujar_ficha(pantalla, centro_x, ficha_y, color)
+        
     def dibujar(self, pantalla):
         pantalla.fill(self.color_fondo)
         pygame.draw.rect(pantalla, self.color_borde, 
@@ -27,14 +43,17 @@ class Tablero:
         barra_x = self.ancho // 2 - self.ancho_barra // 2  #barra central
         pygame.draw.rect(pantalla, self.color_borde,
                         (barra_x, 0, self.ancho_barra, self.alto))
-        espacio_lado = (barra_x - 20) // 6  # Espacio para 6 triángulos en cada lado
-        inicio_x_derecho = barra_x + self.ancho_barra + 10 #dibujar triángulos arriba derecha
+        
+        # Calcular espacio más ajustado para los triángulos
+        espacio_lado = (barra_x - 5) // 6  # Menos margen para que queden más cerca
+        
+        inicio_x_derecho = barra_x + self.ancho_barra #dibujar triángulos arriba derecha
         for i in range(6):
             x = inicio_x_derecho + i * espacio_lado
             color = self.color_triangulo_claro if i % 2 == 0 else self.color_triangulo_oscuro
             self.dibujar_triangulo(pantalla, x, 3, espacio_lado, self.alto_triangulo, 
                                  color, hacia_abajo=True)
-        inicio_x_izquierdo = 10 #dibujar triángulos arriba izquierda
+        inicio_x_izquierdo = 3 #dibujar triángulos arriba izquierda
         for i in range(6):
             x = inicio_x_izquierdo + i * espacio_lado
             color = self.color_triangulo_claro if i % 2 == 0 else self.color_triangulo_oscuro
@@ -53,6 +72,23 @@ class Tablero:
             color = self.color_triangulo_oscuro if i % 2 == 0 else self.color_triangulo_claro
             self.dibujar_triangulo(pantalla, x, self.alto - self.alto_triangulo - 3, espacio_lado, self.alto_triangulo, 
                                  color, hacia_abajo=False)
+
+        # Dibujar fichas blancas iniciales según posiciones del core
+        # Posición 0 del tablero (2 fichas) - arriba derecha, último triángulo (índice 5)
+        x_pos0 = inicio_x_derecho + 5 * espacio_lado
+        self.dibujar_fichas_en_triangulo(pantalla, x_pos0, 3, espacio_lado, 2, self.color_ficha_blanca, True)
+        
+        # Posición 11 del tablero (5 fichas) - arriba izquierda, primer triángulo (índice 0)
+        x_pos11 = inicio_x_izquierdo + 0 * espacio_lado
+        self.dibujar_fichas_en_triangulo(pantalla, x_pos11, 3, espacio_lado, 5, self.color_ficha_blanca, True)
+        
+        # Posición 16 del tablero (3 fichas) - abajo izquierda, quinto triángulo (índice 4)
+        x_pos16 = inicio_x_izquierdo + 4 * espacio_lado  
+        self.dibujar_fichas_en_triangulo(pantalla, x_pos16, self.alto - self.alto_triangulo - 3, espacio_lado, 3, self.color_ficha_blanca, False)
+        
+        # Posición 18 del tablero (5 fichas) - abajo derecha, primer triángulo (índice 0)
+        x_pos18 = inicio_x_derecho + 0 * espacio_lado
+        self.dibujar_fichas_en_triangulo(pantalla, x_pos18, self.alto - self.alto_triangulo - 3, espacio_lado, 5, self.color_ficha_blanca, False)
 
 if __name__ == "__main__":
     pygame.init()
