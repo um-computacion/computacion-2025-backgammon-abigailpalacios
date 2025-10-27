@@ -1,4 +1,5 @@
 import pygame
+from pygame_ui.checker import GrupoFichas
 
 class Tablero:
     def __init__(self, ancho=1200, alto=600):
@@ -15,6 +16,18 @@ class Tablero:
         self.color_ficha_negra = (50, 50, 50)  # Gris oscuro/negro
         self.color_borde_ficha = (0, 0, 0)  # Negro para bordes
         self.radio_ficha = 18
+        
+        # Inicializar grupos de fichas según posiciones iniciales
+        self.grupos_fichas = {
+            0: GrupoFichas(self.color_ficha_blanca, 2),
+            11: GrupoFichas(self.color_ficha_blanca, 5),
+            16: GrupoFichas(self.color_ficha_blanca, 3),
+            18: GrupoFichas(self.color_ficha_blanca, 5),
+            23: GrupoFichas(self.color_ficha_negra, 2),
+            12: GrupoFichas(self.color_ficha_negra, 5),
+            7: GrupoFichas(self.color_ficha_negra, 3),
+            5: GrupoFichas(self.color_ficha_negra, 5)
+        }
         
     def dibujar_triangulo(self, pantalla, x, y, ancho, alto, color, hacia_abajo=True):
         if hacia_abajo:
@@ -36,6 +49,23 @@ class Tablero:
             else:
                 ficha_y = triangulo_y + self.alto_triangulo - 25 - (i * (self.radio_ficha * 2 + 2))
             self.dibujar_ficha(pantalla, centro_x, ficha_y, color)
+        
+    def dibujar_fichas_iniciales(self, pantalla, espacio_lado, inicio_x_izquierdo, inicio_x_derecho):
+        # Mapeo de posiciones lógicas a coordenadas visuales
+        posiciones_visual = {
+            0: (inicio_x_derecho + 5 * espacio_lado, 3, True),
+            11: (inicio_x_izquierdo + 0 * espacio_lado, 3, True),
+            16: (inicio_x_izquierdo + 4 * espacio_lado, self.alto - self.alto_triangulo - 3, False),
+            18: (inicio_x_derecho + 0 * espacio_lado, self.alto - self.alto_triangulo - 3, False),
+            23: (inicio_x_derecho + 5 * espacio_lado, self.alto - self.alto_triangulo - 3, False),
+            12: (inicio_x_izquierdo + 0 * espacio_lado, self.alto - self.alto_triangulo - 3, False),
+            7: (inicio_x_izquierdo + 4 * espacio_lado, 3, True),
+            5: (inicio_x_derecho + 0 * espacio_lado, 3, True)
+        }
+        
+        for posicion, grupo in self.grupos_fichas.items():
+            x, y, hacia_abajo = posiciones_visual[posicion]
+            grupo.dibujar_en_triangulo(pantalla, x, y, espacio_lado, self.alto_triangulo, hacia_abajo)
         
     def dibujar(self, pantalla):
         pantalla.fill(self.color_fondo)
@@ -94,6 +124,9 @@ class Tablero:
         self.dibujar_fichas_en_triangulo(pantalla, x_negra_3, 3, espacio_lado, 3, self.color_ficha_negra, True)
         x_negra_4 = inicio_x_derecho + 0 * espacio_lado
         self.dibujar_fichas_en_triangulo(pantalla, x_negra_4, 3, espacio_lado, 5, self.color_ficha_negra, True)
+
+        # Dibujar fichas usando la nueva clase
+        self.dibujar_fichas_iniciales(pantalla, espacio_lado, inicio_x_izquierdo, inicio_x_derecho)
 
 if __name__ == "__main__":
     pygame.init()
