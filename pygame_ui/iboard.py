@@ -135,14 +135,16 @@ class TableroVisual:
     # --- Método Principal de Dibujado ---
 
     def dibujar(self, pantalla, estado_juego, origen_seleccionado, mensaje_ui):
-        """Dibuja el tablero básico con dados e información del turno."""
+        """
+        Dibuja el estado COMPLETO del juego basado en el diccionario estado_juego.
+        """
         
         # 1. Dibujar Fondo y Tablero Estático
         pantalla.fill(self.color_fondo)
         pygame.draw.rect(pantalla, self.color_borde, (0, 0, self.ancho, self.alto), 3)
         pygame.draw.rect(pantalla, self.color_borde, (self.barra_x, 0, self.ancho_barra, self.alto))
 
-        # Dibujar Triángulos básicos
+        # Dibujar Triángulos
         for i in range(6):
             # Arriba Derecha
             x_dr = self.inicio_x_derecho + i * self.espacio_lado
@@ -161,8 +163,36 @@ class TableroVisual:
             # Abajo Derecha
             color_dr_ab = self.color_triangulo_oscuro if i % 2 == 0 else self.color_triangulo_claro
             self.dibujar_triangulo(pantalla, x_dr, self.y_abajo, self.espacio_lado, self.alto_triangulo, color_dr_ab, False)
+        
+        # 2. Dibujar Zonas de Retiro
+        pygame.draw.rect(pantalla, self.color_triangulo_claro, self.rect_retiro_negras)
+        pygame.draw.rect(pantalla, self.color_borde, self.rect_retiro_negras, 2)
+        self.dibujar_texto(pantalla, "Negras", self.rect_retiro_negras.center, self.fuente_ui, self.color_borde)
+        
+        pygame.draw.rect(pantalla, self.color_triangulo_oscuro, self.rect_retiro_blancas)
+        pygame.draw.rect(pantalla, self.color_borde, self.rect_retiro_blancas, 2)
+        self.dibujar_texto(pantalla, "Blancas", self.rect_retiro_blancas.center, self.fuente_ui, self.color_fondo)
 
-        # Dibujar UI básica (solo dados y turno)
+        # 3. Dibujar Fichas (Estado Dinámico)
+        tablero_logico = estado_juego["tablero"]
+        for pos_logica, fichas in enumerate(tablero_logico):
+            if fichas:
+                cantidad = len(fichas)
+                color = self.color_ficha_blanca if fichas[0] == "Blancas" else self.color_ficha_negra
+                
+                # Obtener coords del mapa
+                x, y, hacia_abajo, rect = self.mapa_posiciones_visuales[pos_logica]
+                
+                self.dibujar_fichas_en_triangulo(pantalla, x, y, self.espacio_lado, cantidad, color, hacia_abajo)
+
+        # 4. Dibujar Fichas en Banco (Barra)
+        banco = estado_juego["banco"]
+        if banco["Blancas"] > 0:
+            self.dibujar_fichas_en_barra(pantalla, banco["Blancas"], self.color_ficha_blanca, self.rect_banco_blancas)
+        if banco["Negras"] > 0:
+            self.dibujar_fichas_en_barra(pantalla, banco["Negras"], self.color_ficha_negra, self.rect_banco_negras)
+
+        # 5. Dibujar UI (Textos, Botones, Dados)
         # Botón de Dados
         pygame.draw.rect(pantalla, (0, 100, 0), self.rect_boton_dados)
         self.dibujar_texto(pantalla, "Tirar", self.rect_boton_dados.center, self.fuente_ui, (255,255,255))
@@ -172,16 +202,30 @@ class TableroVisual:
         self.dibujar_texto(pantalla, turno_texto, (self.barra_x + self.ancho_barra//2, 20), self.fuente_ui, self.color_fondo)
         
         # Dados
-        dados_texto = f"Dados: {estado_juego['dados']}"
+        dados_texto = f"{estado_juego['dados']}"
         self.dibujar_texto(pantalla, dados_texto, (self.barra_x + self.ancho_barra//2, self.alto // 2 + 50), self.fuente_dados, self.color_ficha_blanca)
 
         # Mensaje de UI
         color_msg = self.color_error if "Error" in mensaje_ui else self.color_texto
         self.dibujar_texto(pantalla, mensaje_ui, (self.ancho // 2, self.alto - 20), self.fuente_error, color_msg)
         
-        # Instrucciones
-        instrucciones = "Clic en 'Tirar' para tirar dados. ESPACIO para pasar turno."
-        self.dibujar_texto(pantalla, instrucciones, (self.ancho // 2, self.alto - 50), self.fuente_ui, self.color_texto)
+        # Ganador
+        if estado_juego["ganador"]:
+            s = pygame.Surface((self.ancho, self.alto), pygame.SRCALPHA)
+            s.fill((0,0,0,180))
+            pantalla.blit(s, (0,0))
+            texto_ganador = f"¡GANADOR: {estado_juego['ganador']}!"
+            self.dibujar_texto(pantalla, texto_ganador, (self.ancho // 2, self.alto // 2), pygame.font.SysFont("Arial", 60, bold=True), (255, 215, 0))
+
+        # 6. Dibujar Resaltado de Selección
+        if origen_seleccionado is not None:
+            if origen_seleccionado == "banco":
+                zona_banco = self.rect_banco_blancas if estado_juego["ficha actual"] == "Blancas" else self.rect_banco_negras
+                self.dibujar_superficie_alpha(pantalla, zona_banco, self.color_seleccion)
+            elif isinstance(origen_seleccionado, int):
+                rect_seleccion = self.mapa_posiciones_visuales[origen_seleccionado][3]
+                self.dibujar_superficie_alpha(pantalla, rect_seleccion, self.color_seleccion)
+
 
     # --- Método de Detección de Clics ---
     

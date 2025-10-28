@@ -9,8 +9,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.backgammongame import Backgammongame
 from core.player import Player
 from iboard import TableroVisual
+from core.exceptions import BackgammonException, MovimientoInvalido, SinMovimientos
 
-
+# --- Tu función para obtener nombres (sin cambios) ---
 def get_player_input():
     def submit():
         nonlocal player1, player2
@@ -44,7 +45,7 @@ def get_player_input():
     
     return player1, player2
 
-# controlador principal
+# --- Función Principal del Controlador ---
 def main():
     player1_name, player2_name = get_player_input()
     
@@ -55,55 +56,141 @@ def main():
     pygame.init()
     pygame.font.init()
     
+    # 1. Instanciar el MODELO (Tu lógica de juego)
+    # (Necesitamos pasar jugadores reales, no solo nombres)
     player1 = Player(player1_name, "Blancas")
     player2 = Player(player2_name, "Negras")
     juego = Backgammongame(player1, player2)
 
+    # 2. Instanciar la VISTA (Tu tablero de Pygame)
     screen = pygame.display.set_mode((1200, 600))
     pygame.display.set_caption(f"Backgammon - {player1_name} vs {player2_name}")
     vista_tablero = TableroVisual()
 
+    # 3. Variables de estado del Controlador
     running = True
     dados_tirados = False
+    origen_seleccionado = None  # Almacena la posición lógica (0-23) o "banco"
     mensaje_ui = "¡Bienvenido! Tira los dados para comenzar."
     
     clock = pygame.time.Clock()
 
     while running:
+        # --- Obtener el estado actual del Modelo ---
+        # estado_juego es el diccionario que definiste en tu lógica
         estado_juego = juego.estado_juego()
         
+        # --- Manejo de Eventos (Input del Usuario) ---
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos_clic = pygame.mouse.get_pos()
+                mensaje_ui = "" # Limpiar mensaje en cada clic
 
-                # Solo manejar el botón de tirar dados
+                # A. Botón de Tirar Dados
                 if vista_tablero.rect_boton_dados.collidepoint(pos_clic):
-                    if not dados_tirados:
+                    if not dados_tirados and not estado_juego["ganador"]:
                         try:
                             juego.tirar_dados()
                             dados_tirados = True
-                            mensaje_ui = f"Dados tirados: {estado_juego['dados']}"
-                            print(f"Jugador {estado_juego['turno']} tiró: {estado_juego['dados']}")
+                            if not juego.mov_posible():
+                                mensaje_ui = "No hay movimientos. Pasa el turno."
+                            else:
+                                mensaje_ui = f"Mueve {estado_juego['ficha actual']}"
                         except Exception as e:
                             mensaje_ui = f"Error: {e}"
+                    elif estado_juego["ganador"]:
+                         mensaje_ui = f"Juego terminado. Ganador: {estado_juego['ganador']}"
                     else:
-                        mensaje_ui = "Ya tiraste los dados. Presiona SPACE para pasar turno."
-            
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and dados_tirados:
-                    # Pasar turno
-                    juego.definir_turno()
-                    dados_tirados = False
-                    mensaje_ui = f"Turno de {juego.get_turno().get_nombre()}. ¡Tira los dados!"
+                        mensaje_ui = "Ya tiraste. Pasa el turno cuando termines."
+                    origen_seleccionado = None # Resetear selección al tirar dados
+                    
+                # B. Clic en el Tablero (Mover Fichas)
+                elif dados_tirados and not estado_juego["ganador"]:
+                    # Traducir clic de (x,y) a posición lógica
+                    pos_logica = vista_tablero.convertir_clic_a_posicion(pos_clic)
 
-        # Dibujar
-        screen.fill((0, 0, 0))
-        vista_tablero.dibujar(screen, estado_juego, None, mensaje_ui)
-        pygame.display.flip()
-        clock.tick(30)
+                    if pos_logica is None:
+                        # Clic fuera de cualquier zona jugable
+                        origen_seleccionado = None
+                        mensaje_ui = "Clic fuera del tablero."
+                        continue
+
+                    if origen_seleccionado is None:
+                        # --- 1. SELECCIONAR ORIGEN ---
+                        if pos_logica == "banco" and estado_juego["estado"] == "reingreso":
+                            origen_seleccionado = "banco"
+                            mensaje_ui = "Banco seleccionado. Elige destino."
+                        elif pos_logica == "retiro":
+                            mensaje_ui = "Esta es la zona para sacar fichas."
+                        elif isinstance(pos_logica, int):
+                            if estado_juego["tablero"][pos_logica] and \
+                               estado_juego["tablero"][pos_logica][0] == estado_juego["ficha actual"]:
+                                origen_seleccionado = pos_logica
+                                mensaje_ui = f"Posición {pos_logica+1} seleccionada. Elige destino."
+                            else:
+                                mensaje_ui = "No hay fichas tuyas en esa posición."
+                    
+                    else:
+                        # --- 2. SELECCIONAR DESTINO ---
+                        destino = pos_logica
+                        
+                        try:
+                            if origen_seleccionado == "banco":
+                                # --- Lógica de REINGRESO ---
+                                if isinstance(destino, int):
+                                    # Calcular el dado necesario para este destino
+                                    ficha = estado_juego["ficha actual"]
+                                    dado_necesario = -1
+                                    if ficha == "Blancas":
+                                        dado_necesario = destino + 1 # pos 0 -> dado 1
+                                    else:
+                                        dado_necesario = 24 - destino # pos 23 -> dado 1
+                                    
+                                    juego.reingresar_ficha(dado_necesario)
+                                    mensaje_ui = f"Ficha reingresada en {destino+1}"
+                                else:
+                                    raise MovimientoInvalido("Destino inválido para reingresar")
+
+                            elif destino == "retiro":
+                                # --- Lógica de RETIRAR FICHA ---
+                                if isinstance(origen_seleccionado, int):
+                                    juego.retirar_ficha(origen_seleccionado)
+                                    mensaje_ui = f"Ficha retirada desde {origen_seleccionado+1}"
+                                else:
+                                    raise MovimientoInvalido("Origen inválido para retirar")
+
+                            elif isinstance(destino, int) and isinstance(origen_seleccionado, int):
+                                # --- Lógica de MOVIMIENTO NORMAL ---
+                                juego.mover_ficha(origen_seleccionado, destino)
+                                mensaje_ui = f"Movido de {origen_seleccionado+1} a {destino+1}"
+                            
+                            else:
+                                raise MovimientoInvalido("Movimiento no reconocido")
+
+                        except (BackgammonException, ValueError) as e:
+                            mensaje_ui = f"Error: {e}"
+                        
+                        # Resetear la selección después de un intento de movimiento
+                        origen_seleccionado = None
+
+        # --- Lógica de fin de turno (fuera del bucle de eventos) ---
+        if dados_tirados and juego.turno_completo() and not estado_juego["ganador"]:
+            juego.definir_turno()
+            dados_tirados = False
+            origen_seleccionado = None
+            mensaje_ui = f"Turno de {juego.get_turno().get_nombre()}. ¡Tira los dados!"
+
+        # --- Dibujado (VISTA) ---
+        screen.fill((0, 0, 0)) # Limpiar pantalla
+        
+        # La vista dibuja el estado actual que le pasa el controlador
+        vista_tablero.dibujar(screen, estado_juego, origen_seleccionado, mensaje_ui)
+        
+        pygame.display.flip() # Actualizar pantalla
+        clock.tick(30) # Limitar a 30 FPS
 
     pygame.quit()
 
