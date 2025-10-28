@@ -1,8 +1,15 @@
-from logging import root
 import pygame
 import tkinter as tk
 from tkinter import simpledialog
-from board import Tablero
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+from core.backgammongame import Backgammongame
+from core.player import Player
+from iboard import TableroVisual
+
 
 def get_player_input():
     def submit():
@@ -37,26 +44,66 @@ def get_player_input():
     
     return player1, player2
 
+# controlador principal
 def main():
-    player1, player2 = get_player_input()
+    player1_name, player2_name = get_player_input()
+    
+    if not player1_name or not player2_name:
+        print("Juego cancelado.")
+        return
 
     pygame.init()
+    pygame.font.init()
+    
+    player1 = Player(player1_name, "Blancas")
+    player2 = Player(player2_name, "Negras")
+    juego = Backgammongame(player1, player2)
+
     screen = pygame.display.set_mode((1200, 600))
-    pygame.display.set_caption(f"Backgammon - {player1} vs {player2}")
-    
-    # Crear el tablero
-    tablero = Tablero()
-    
+    pygame.display.set_caption(f"Backgammon - {player1_name} vs {player2_name}")
+    vista_tablero = TableroVisual()
+
     running = True
+    dados_tirados = False
+    mensaje_ui = "¡Bienvenido! Tira los dados para comenzar."
+    
+    clock = pygame.time.Clock()
 
     while running:
-        for event in pygame.event.get():  
+        estado_juego = juego.estado_juego()
+        
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos_clic = pygame.mouse.get_pos()
 
-        # Dibujar el tablero con fichas blancas
-        tablero.dibujar(screen)
+                # Solo manejar el botón de tirar dados
+                if vista_tablero.rect_boton_dados.collidepoint(pos_clic):
+                    if not dados_tirados:
+                        try:
+                            juego.tirar_dados()
+                            dados_tirados = True
+                            mensaje_ui = f"Dados tirados: {estado_juego['dados']}"
+                            print(f"Jugador {estado_juego['turno']} tiró: {estado_juego['dados']}")
+                        except Exception as e:
+                            mensaje_ui = f"Error: {e}"
+                    else:
+                        mensaje_ui = "Ya tiraste los dados. Presiona SPACE para pasar turno."
+            
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and dados_tirados:
+                    # Pasar turno
+                    juego.definir_turno()
+                    dados_tirados = False
+                    mensaje_ui = f"Turno de {juego.get_turno().get_nombre()}. ¡Tira los dados!"
+
+        # Dibujar
+        screen.fill((0, 0, 0))
+        vista_tablero.dibujar(screen, estado_juego, None, mensaje_ui)
         pygame.display.flip()
+        clock.tick(30)
 
     pygame.quit()
 

@@ -1,5 +1,5 @@
 import pygame
-from pygame_ui.checker import GrupoFichas
+from pygame_ui.ichecker import GrupoFichas
 
 class Tablero:
     def __init__(self, ancho=1200, alto=600):
