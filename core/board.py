@@ -68,7 +68,7 @@ class Board:
         """Reingresa una ficha del banco al tablero."""
         if self.__banco__[ficha] <= 0:
             raise ValueError("No hay fichas en el banco")
-        
+
         if self.__tablero__[pos_destino] is None:
             self.__tablero__[pos_destino] = [ficha]
             self.__banco__[ficha] -= 1
@@ -99,6 +99,6 @@ class Board:
     def sin_fichas(self, ficha):
         """Verifica si no quedan fichas de un color en el tablero."""
         for casilla in self.__tablero__:
-            if casilla is not None and ficha in casilla:
+            if casilla and ficha in casilla:
                 return False
         return True

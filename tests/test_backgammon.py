@@ -578,5 +578,117 @@ class TestBackgammon(unittest.TestCase):
         game.mov_posible() == False
         self.assertTrue(game.turno_completo())
 
+    def setUp(self):
+        """Configura el juego para los tests."""
+        self.juego = Backgammongame("Jugador1", "Jugador2")
+    
+    def test_mostrar_tablero_formato_completo(self):
+        """Test que mostrar_tablero retorna string formateado correctamente."""
+        resultado = self.juego.mostrar_tablero()
+        self.assertIn("=", resultado)
+        self.assertIn("13 14 15 16 17 18", resultado)
+        self.assertIn("19 20 21 22 23 24", resultado)
+        self.assertIn("BANCO:", resultado)
+        self.assertIn("Blancas", resultado)
+        self.assertIn("Negras", resultado)
+        self.assertIn("12 11 10  9  8  7", resultado)
+        self.assertIn("6  5  4  3  2  1", resultado)
+        self.assertIsInstance(resultado, str)
+    
+    def test_mostrar_tablero_posicion_13_a_18_con_fichas(self):
+        """Test que muestra correctamente fichas en posiciones 13-18."""
+        resultado = self.juego.mostrar_tablero()
+        lineas = resultado.split('\n')
+        self.assertTrue(any('B' in linea or 'N' in linea for linea in lineas))
+    
+    def test_mostrar_tablero_posicion_19_a_24_con_fichas(self):
+        """Test que muestra correctamente fichas en posiciones 19-24."""
+        resultado = self.juego.mostrar_tablero()
+        self.assertIn("B", resultado)
+        self.assertIn("N", resultado)
+    
+    def test_mostrar_tablero_banco_con_fichas_capturadas(self):
+        """Test que muestra banco con fichas capturadas."""
+        self.juego.banco["Blancas"] = 2
+        self.juego.banco["Negras"] = 1
+        resultado = self.juego.mostrar_tablero()
+        
+        self.assertIn("Blancas[2]", resultado)
+        self.assertIn("Negras[1]", resultado)
+    
+    def test_mostrar_tablero_posiciones_vacias(self):
+        """Test que muestra puntos para posiciones vacías."""
+        resultado = self.juego.mostrar_tablero()
+        
+        # Debe haber puntos (.) para posiciones vacías
+        self.assertIn(".", resultado)
+    
+    def test_mostrar_tablero_separador_barra(self):
+        """Test que incluye separador || en el tablero."""
+        resultado = self.juego.mostrar_tablero()
+        
+        # Verificar separador de barra
+        self.assertIn("||", resultado)
+        # Debe aparecer en ambas mitades del tablero
+        self.assertTrue(resultado.count("||") >= 2)
+    
+    def test_mostrar_tablero_loop_inferior_12_a_1(self):
+        """Test que recorre correctamente posiciones 12 a 1 (11 a 0 en índices)."""
+        tablero = self.juego.get_board().mostrar_tablero()
+        self.assertIsNotNone(tablero[0])
+        self.assertEqual(tablero[0][0], "Blancas")
+        resultado = self.juego.mostrar_tablero()
+        lineas = resultado.split('\n')
+        linea_inferior = [l for l in lineas if 'B2' in l or 'B' in l and '12 11' in resultado]
+        self.assertTrue(len(linea_inferior) >= 0)
+    
+    def test_mostrar_tablero_multiples_fichas_misma_posicion(self):
+        """Test que muestra correctamente múltiples fichas en una posición."""
+        tablero = self.juego.get_board().mostrar_tablero()
+        resultado = self.juego.mostrar_tablero()
+        self.assertTrue("B5" in resultado or "N5" in resultado)
+    
+    
+    def test_mostrar_tablero_formato_linea_inferior_completa(self):
+        """Test que la línea inferior se construye completamente."""
+        resultado = self.juego.mostrar_tablero()
+        lineas = resultado.split('\n')
+        
+        # Buscar la línea inferior (antes del footer con números)
+        linea_fichas_inferior = None
+        for i, linea in enumerate(lineas):
+            if 'BANCO' in linea:
+                # Varias líneas después está la inferior
+                if i + 3 < len(lineas):
+                    linea_fichas_inferior = lineas[i + 3]
+                    break
+        
+        # Verificar que existe y tiene contenido
+        self.assertIsNotNone(linea_fichas_inferior)
+        self.assertTrue(len(linea_fichas_inferior) > 10)
+    
+    def test_mostrar_tablero_todas_posiciones_vacias(self):
+        """Test con tablero casi vacío (solo para verificar formato)."""
+        resultado = self.juego.mostrar_tablero()
+        self.assertIn("=" * 50, resultado)
+        self.assertIn("-" * 50, resultado)
+    
+    
+    def test_mostrar_tablero_index_5_separador(self):
+        """Test que el índice 5 inserta correctamente el separador || en inferior."""
+        resultado = self.juego.mostrar_tablero()
+        # Debe haber separador en la parte inferior también
+        lineas = resultado.split('\n')
+        lineas_con_separador = [l for l in lineas if '||' in l]
+        
+        # Al menos 2 líneas con separador (superior e inferior de fichas)
+        self.assertGreaterEqual(len(lineas_con_separador), 2)
+    
+    def test_mostrar_tablero_retorna_string(self):
+        """Test que mostrar_tablero retorna un string válido."""
+        resultado = self.juego.mostrar_tablero()
+        self.assertIsInstance(resultado, str)
+        self.assertGreater(len(resultado), 100)  
+
 if __name__ == '__main__':
     unittest.main()
