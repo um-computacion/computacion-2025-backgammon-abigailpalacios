@@ -1,323 +1,467 @@
-# Promps Desarrollo
+# Prompts Desarrollo
 
 ## Prompt 1
 
 **Herramienta utilizada:**
-- Chat GPT (GPT-5)
+- GitHub Copilot
 
 **Texto exacto del Prompt:**
-- "dime solo de la clase board que mejoras puedo hacer para que quede 10 puntos"
+```
+como creo una ventana de pygame con un tablero de backgammon que tenga 24 triangulos
+```
 
 **Respuesta de la IA:**
+```python
+import pygame
 
-¡Vamos solo con `Board` y a lo concreto! Esto es lo que agregaría/mejoraría para que quede “10 puntos” (manteniendo tu estilo simple y con early-returns):
+pygame.init()
+screen = pygame.display.set_mode((1200, 600))
+pygame.display.set_caption("Backgammon")
 
-Prioridad 1 (reglas clave del juego)
+# Definir colores
+BEIGE = (222, 184, 135)
+BROWN = (139, 69, 19)
+WHEAT = (245, 222, 179)
 
-1. **Integrar la captura en `mover_ficha`**
-   Que `mover_ficha(origen, destino, ficha)` llame primero a `ficha_comida(ficha, destino)` y solo coloque/apile si no hubo captura. Hoy `mover_ficha` apila sin considerar captura.
-
-2. **Completar `ficha_comida`**
-
-   * Retornar siempre `True` (si capturó) o `False` (si no).
-   * Caso “misma ficha”: apilar y `return False`.
-   * Caso “2+ enemigas”: no entra (dejá `return False` si querés conservar simplicidad).
-     Hoy solo cubre “1 enemiga” y no retorna en todos los caminos.&#x20;
-
-3. **Chequeo de color en `validar_movimiento`**
-   Antes de validar dirección, comprobar que en `pos_origen` haya **al menos una** ficha **del color que mueve** (o sea, `self.__tablero__[pos_origen][0] == ficha`). Ahora solo verificás que haya fichas, no que sean del color correcto.
-
-Prioridad 2 (flujo de turno y entradas desde banco)
-
-4. **`puede_reingresar(ficha, pos)`**
-   Devuelve `True` si la casilla está vacía, es propia o tiene 1 enemiga; `False` si tiene 2+. Te simplifica la lógica y tests.
-
-5. **`reingresar_desde_banco(ficha, pos)`**
-   Si `__banco__[ficha] > 0` y `puede_reingresar(...)`, entonces llamá a `ficha_comida(ficha, pos)` (que ya maneja apilar/comer) y decrementá el banco. Tenés `banco()` y `devolver_ficha_comida`, pero falta el reingreso real al tablero.
-
-Prioridad 3 (comodines para reglas y tests)
-
-6. **`posiciones_ocupadas(ficha=None) -> list[int]`**
-   Lista de puntos ocupados (filtrar por color opcional). Útil para CLI y asserts.
-
-7. **`contar_fichas(ficha) -> int`**
-   Cuenta todas las fichas de un color en el tablero (rápidos asserts de integridad).
-
-8. **`distancia` robusta + uso consistente**
-   Ya la tenés; solo asegurate de usarla en `validar_movimiento` y tests como métrica única de avance (lo hacés, bien ahí).
-
-Prioridad 4 (fin de partida / bearing-off, si querés subir nivel)
-
-9. **`todas_en_casa(ficha) -> bool`**
-   Verifica si las 15 están en el “home board” correspondiente.
-
-10. **`puede_salir(ficha, pos, dado) -> bool`** y **`sacar_ficha(ficha, pos)`**
-    Para “bearing-off”. Podés llevar un contador simple de “fuera” por color (p.ej. `__fuera__ = {"Blancas":0,"Negras":0}`) y sumar al sacar.
-
----
-
-Detalles finos que elevan la nota
-
-* **Retornos consistentes**: evitá `return` sin valor (devuelve `None` y rompe tests). Hoy se ve en `ficha_comida`/`devolver_ficha_comida`.&#x20;
-* **Docstrings cortos** en cada método (qué recibe, qué hace, qué devuelve).
-* **Convención de colores**: usá siempre `"Blancas"` / `"Negras"` en tablero y tests (en tus tests hay uso de “Blanca” singular, unificalo).
-
-Si querés, te dejo en el próximo mensaje los **firmwares (firmas + 3–5 líneas clave)** de cada método para copiar y pegar y que todo enganche con tus tests actuales.
+# Dibujar triángulos
+for i in range(12):
+    x = i * 100
+    if i % 2 == 0:
+        color = WHEAT
+    else:
+        color = BROWN
+    pygame.draw.polygon(screen, color, [(x, 0), (x+50, 250), (x+100, 0)])
+```
 
 **Uso:**
-* Utilizada con modificaciones: la mayoria descarte porque considere que era mucho codigo innecesario y estaba demas
+- Usada con modificaciones: Cambié el tamaño de ventana a 1400x700, ajusté posiciones y agregué triángulos superiores e inferiores
 
 **Referencia:**
-* `board.py`
+* `pygame_ui/iboard.py`
+
+---
 
 ## Prompt 2
 
----
+**Herramienta utilizada:**
+- ChatGPT (GPT-4)
 
 **Texto exacto del Prompt:**
-- "con mi codigo quiero que me digas, guiame en que puedo hacer ahora, que clase pedo mejorar o cual empezar, si me faltan metodos o debo mejorarlos"
+```
+necesito dibujar fichas circulares en pygame que se apilen en los triangulos del tablero, como hago eso
+```
 
 **Respuesta de la IA:**
-
-¡Dale! Vi tu código y tests actuales y te dejo un plan corto, en orden, para que avances **sin romper tu estilo** (simple, early-returns) 👇
-
-Paso 1 — Ajustar `ficha_comida` y el test
-
-Hoy tu `ficha_comida` solo devuelve `True` cuando come; en los demás caminos vuelve `None`. Hacé que **devuelva `False`** cuando no haya captura y que **apile** si el color es el mismo.
-Además, contemplá **bloqueo** cuando hay **2+ fichas rivales** (podés simplemente `return False` para mantener tu estilo simple).
-Ojo: tus tests usan `"Blanca"` en singular; tu tablero usa `"Blancas"`/`"Negras"` (plural). Elegí una convención y usála en ambos lados (yo recomiendo plural). En el test aparece `"Blanca"` en `test_ficha_comida`, por eso te fallaba. &#x20;
-
-Mini-patch sugerido (mismo estilo):
-
 ```python
-# Board.ficha_comida (versión simple/consistente)
-def ficha_comida(self, ficha, pos_destino):
-    casilla = self.__tablero__[pos_destino]
-    if casilla is None:
-        return False
-    # 1 ficha rival → comer
-    if len(casilla) == 1 and casilla[0] != ficha:
-        rival = casilla[0]
-        self.__tablero__[pos_destino] = [ficha]
-        self.__banco__[rival] += 1
-        return True
-    # mismas fichas → apilar
-    if casilla[0] == ficha:
-        casilla.append(ficha)
-        return False
-    # 2+ rivales → bloqueado (no entra)
-    return False
+def dibujar_ficha(screen, x, y, radio, color):
+    pygame.draw.circle(screen, color, (x, y), radio)
+    pygame.draw.circle(screen, (0, 0, 0), (x, y), radio, 2)  # borde
+
+# Para apilar fichas:
+for i in range(cantidad_fichas):
+    ficha_y = y_base + (i * (radio * 2 + 2))
+    dibujar_ficha(screen, centro_x, ficha_y, 20, color)
 ```
-
-(Con esto, tu `test_ficha_comida` pasa si unificás los nombres de color.) &#x20;
-
-Paso 2 — Integrar captura en `mover_ficha`
-
-* Ahora `mover_ficha` **no** llama a `ficha_comida`, por eso nunca se “come” al rival al mover. Primero intentá capturar y, **solo si no capturaste ni apilaste ahí**, entonces hacé la lógica actual de colocar.
-* Queda así (resumen):
-
-  1. `self.validar_movimiento(...)`
-  2. `capturo = self.ficha_comida(ficha, pos_destino)`
-  3. Si `capturo` es `False` **y la casilla estaba vacía**, entonces creás la lista o apilás si es propia
-  4. Después hacés el `pop()` del origen como ya tenés.&#x20;
-
-Idea de integración (a tu estilo):
-
-```python
-def mover_ficha(self, pos_origen, pos_destino, ficha):
-    self.validar_movimiento(pos_destino, pos_origen, ficha)
-    casilla_destino = self.__tablero__[pos_destino]
-    capturo = self.ficha_comida(ficha, pos_destino)
-    if casilla_destino is None and not capturo:
-        self.__tablero__[pos_destino] = [ficha]
-    # Si capturó o apiló, ya está colocado
-
-    self.__tablero__[pos_origen].pop()
-    if not self.__tablero__[pos_origen]:
-        self.__tablero__[pos_origen] = None
-```
-
-Con esto evitás duplicar lógica y la “comida” pasa cuando corresponde.&#x20;
-
-Paso 3 — Dados: 3 métodos chicos que te sirven ya
-
-Tu `Dice` está correcto para tirar y leer, pero te va a hacer falta manejar los “movimientos disponibles” del turno. Agregá:
-
-`es_doble(self) -> bool`
-`movimientos_restantes(self) -> list[int]`
-`usar_movimiento(self, valor) -> bool` (borra una aparición de `valor` si existe y devuelve `True/False`)
-  Con esto podés escribir tests sencillos y controlar el turno sin lógica rara.&#x20;
-
-Paso 4 — Reingreso simple desde banco
-
-Aprovechá que ya tenés `banco()` y `devolver_ficha_comida`:
-
- `puede_reingresar(self, ficha, pos) -> bool` (vacía, propia o 1 rival = True; 2+ rivales = False)
-`reingresar_desde_banco(self, ficha, pos)`:
-
-  1. si `__banco__[ficha] > 0` y `puede_reingresar(...)`
-  2. usá `ficha_comida(ficha, pos)` para resolver si come/apila
-  3. `self.__banco__[ficha] -= 1`
-     Esto te sube cobertura y te prepara para la CLI.&#x20;
-
-Paso 5 — Métodos cortos de ayuda (Board)
-
-* `posiciones_ocupadas(self, ficha=None) -> list[int]` (todas u opcional por color)
-* `contar_fichas(self, ficha) -> int` (suma en tablero; útil para asserts)
-* Más adelante: `todas_en_casa(self, ficha)` y `sacar_ficha(...)` (bearing-off)
-
-Paso 6 — Player (mínimas utilidades)
-
-Tu `Player` está bien para empezar. Si querés sumar algo corto:
-
-* `get_nombre()`, `get_ficha()`, `es_mi_turno(turno_color) -> bool` (te ayuda en CLI/tests).&#x20;
-
-
-Qué haría hoy (orden concreto)
-
-1. Unificar `"Blancas"`/`"Negras"` en tests y código. Arreglar `ficha_comida` (Paso 1). &#x20;
-2. Integrarla en `mover_ficha` (Paso 2).&#x20;
-3. Agregar `es_doble`, `movimientos_restantes`, `usar_movimiento` en `Dice` + tests (Paso 3). &#x20;
-4. Implementar `puede_reingresar` y `reingresar_desde_banco` + 2 tests (reingresa sobre vacío y reingresa comiendo 1 rival) (Paso 4). &#x20;
-
-Si querés, en el próximo mensaje te paso los **snippets exactos** para `Dice` y los dos métodos de reingreso con tests mínimos que suben el coverage.
 
 **Uso:**
-* Utilizada con modificaciones: como la funcion ya la habia realizado, la IA modifico un poco, utilice parte del codigo que me dijo y descarte codigo innecesario
+- Usada sin cambios
 
 **Referencia:**
-* `board.py`
+* `pygame_ui/iboard.py` - método `dibujar_fichas_en_triangulo`
 
 ---
 
 ## Prompt 3
 
 **Herramienta utilizada:**
-- Chat GPT (GPT-5)
+- GitHub Copilot
 
 **Texto exacto del Prompt:**
-- "tengo esto hasta ahora, puedes decirme como seguir en el caso que el dado sea mayor y no haya nninguna ficha atras?"
+```
+como detecto clicks del mouse en pygame y convierto las coordenadas en posiciones del tablero logico
+```
 
 **Respuesta de la IA:**
-
- else:
-        if any(tablero[i] and ficha in tablero[i] for i in distancia_lejana):
-            raise ValueError("No se puede retirar: hay fichas más lejanas")
-
-        dado_usado = next((d for d in dado if d > distancia), None)
-        if dado_usado is None:
-            raise ValueError("El dado no permite retirar esta ficha")
-
-        tablero[pos_origen].pop()
-        self.usar_dados(dado_usado)
-
-    if not tablero[pos_origen]:
-        tablero[pos_origen] = None
+```python
+for event in pygame.event.get():
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        pos = event.pos
+        # Convertir coordenadas a posición lógica
+        if rect_triangulo.collidepoint(pos):
+            posicion_logica = calcular_posicion(pos)
+```
 
 **Uso:**
-* Utilizada sin modificaciones: utilice el codigo que me devolvio la IA sin modificacion porque no encontraba ninguna otra manera de hacerlo
+- Usada con modificaciones: Creé un método `convertir_clic_a_posicion()` que usa diccionario de rectángulos
 
 **Referencia:**
-* `backgammongame.py`
+* `pygame_ui/events.py` - método `_handle_mouse_click`
+* `pygame_ui/iboard.py` - método `convertir_clic_a_posicion`
+
+---
 
 ## Prompt 4
 
 **Herramienta utilizada:**
-- Chat GPT (GPT-5)
+- ChatGPT (GPT-4)
 
 **Texto exacto del Prompt:**
-- "que significa el "next"?"
+```
+como creo un boton en pygame para tirar los dados, que se vea bien y sea clickeable
+```
 
 **Respuesta de la IA:**
+```python
+# Crear rectángulo del botón
+rect_boton = pygame.Rect(barra_x + 5, alto // 2 - 45, ancho_barra - 10, 35)
 
- 📌 ¿Qué hace?
+# Dibujar botón
+pygame.draw.rect(screen, (0, 120, 0), rect_boton)
+pygame.draw.rect(screen, (0, 0, 0), rect_boton, 2)
 
-Busca el primer dado que sea mayor que distancia, y lo guarda en dado_usado.
+# Agregar texto
+font = pygame.font.SysFont("Arial", 20)
+text = font.render("TIRAR", True, (255, 255, 255))
+text_rect = text.get_rect(center=rect_boton.center)
+screen.blit(text, text_rect)
 
-✅ Detalle paso a paso:
-
-dados es una lista, por ejemplo: [3, 5].
-
-distancia es, por ejemplo, 2 (una ficha está a 2 pasos de salir).
-
-(d for d in dados if d > distancia) es un generador: recorre los dados y va dejando solo los que sean mayores a la distancia.
-
-En el ejemplo: 3 > 2 → sí → guarda 3.
-
-Listo, ya encontró uno.
-
-next(...) devuelve el primer valor que cumple esa condición.
-
-Si encuentra alguno, lo devuelve (por ejemplo: 3).
-
-Si no encuentra ninguno, devuelve el valor por defecto: None (esto lo indica el , None al final).
-
-🔁 Equivalente con for (más largo, mismo resultado):
-dado_usado = None
-for d in dados:
-    if d > distancia:
-        dado_usado = d
-        break
-
-
-La versión con next(...) es simplemente más corta y elegante. Pero si preferís usar el for, funciona igual.
+# Detectar click
+if event.type == pygame.MOUSEBUTTONDOWN:
+    if rect_boton.collidepoint(event.pos):
+        tirar_dados()
+```
 
 **Uso:**
-* Utilizada sin modificaciones: utilice el codigo que me devolvio la IA sin modificacion porque no encontraba ninguna otra manera de hacerlo
+- Usada sin cambios
 
 **Referencia:**
-* `backgammongame.py`
+* `pygame_ui/iboard.py` - inicialización de `rect_boton_dados`
+* `pygame_ui/events.py` - método `_handle_dice_button`
+
+---
 
 ## Prompt 5
 
 **Herramienta utilizada:**
-- Chat GPT (GPT-5)
+- GitHub Copilot
 
 **Texto exacto del Prompt:**
-- "que hace el any?"
+```
+necesito resaltar los triangulos donde se puede mover una ficha con color verde semitransparente
+```
 
 **Respuesta de la IA:**
+```python
+# Crear superficie con transparencia
+superficie = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+superficie.fill((0, 255, 0, 100))  # Verde con alpha
+screen.blit(superficie, rect.topleft)
+```
 
-📌 Explicado paso a paso:
-
-posiciones_mas_lejanas es un range que contiene las posiciones del tablero más alejadas de la salida que pos_origen.
-
-Si estás jugando con Blancas, eso sería de la posición 18 hasta justo antes de pos_origen.
-
-Si estás con Negras, sería de pos_origen + 1 hasta el 5.
-
-El for i in posiciones_mas_lejanas recorre todas esas posiciones.
-
-Para cada i, hace este chequeo:
-
-tablero[i] and ficha in tablero[i]
-
-
-Esto evalúa:
-
-¿Hay algo en tablero[i]? → tablero[i] no es None.
-
-¿Y esa casilla contiene mi ficha? (es decir, "Blancas" o "Negras", según el turno actual).
-
-any(...) devuelve True si al menos una de esas casillas cumple las dos condiciones anteriores.
-
-✅ En otras palabras:
-
-Si tengo fichas mías más atrás, entonces no puedo retirar con un dado mayor desde pos_origen.
-
-🔁 Equivalente largo con for:
-hay_mas_lejanas = False
-for i in posiciones_mas_lejanas:
-    if tablero[i] and ficha in tablero[i]:
-        hay_mas_lejanas = True
-        break
-
-if hay_mas_lejanas:
-    raise ValueError("No se puede retirar: hay fichas más lejanas")
-
-    
 **Uso:**
-* Utilizada sin modificaciones: utilice el codigo que me devolvio la IA sin modificacion porque no encontraba ninguna otra manera de hacerlo
+- Usada sin cambios
 
 **Referencia:**
-* `backgammongame.py`
+* `pygame_ui/iboard.py` - método `dibujar_superficie_alpha`
+
+---
+
+## Prompt 6
+
+**Herramienta utilizada:**
+- ChatGPT (GPT-4)
+
+**Texto exacto del Prompt:**
+```
+como hago un dialogo de entrada en tkinter para pedir nombres de jugadores antes de iniciar pygame
+```
+
+**Respuesta de la IA:**
+```python
+import tkinter as tk
+
+def get_names():
+    def submit():
+        nonlocal name1, name2
+        name1 = entry1.get()
+        name2 = entry2.get()
+        root.quit()
+    
+    name1 = name2 = ""
+    root = tk.Tk()
+    root.title("Nombres")
+    
+    tk.Label(root, text="Jugador 1:").pack()
+    entry1 = tk.Entry(root)
+    entry1.pack()
+    
+    tk.Label(root, text="Jugador 2:").pack()
+    entry2 = tk.Entry(root)
+    entry2.pack()
+    
+    tk.Button(root, text="OK", command=submit).pack()
+    
+    root.mainloop()
+    root.destroy()
+    return name1, name2
+```
+
+**Uso:**
+- Usada con modificaciones: Agregué estilos, colores y valores por defecto
+
+**Referencia:**
+* `pygame_ui/main.py` - función `get_player_input`
+
+---
+
+## Prompt 7
+
+**Herramienta utilizada:**
+- GitHub Copilot
+
+**Texto exacto del Prompt:**
+```
+como separo la logica de eventos de pygame de la logica de renderizado, quiero una arquitectura MVC
+```
+
+**Respuesta de la IA:**
+```python
+# Crear clase EventHandler
+class EventHandler:
+    def __init__(self, juego, vista):
+        self.juego = juego
+        self.vista = vista
+    
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+            # Manejar otros eventos
+        return True
+
+# En main.py
+event_handler = EventHandler(juego, tablero_visual)
+while event_handler.running:
+    event_handler.handle_events()
+    tablero_visual.dibujar(screen, estado)
+```
+
+**Uso:**
+- Usada sin cambios, base de la arquitectura actual
+
+**Referencia:**
+* `pygame_ui/events.py` - clase `EventHandler`
+* `pygame_ui/main.py` - loop principal
+
+---
+
+## Prompt 8
+
+**Herramienta utilizada:**
+- ChatGPT (GPT-4)
+
+**Texto exacto del Prompt:**
+```
+tengo que mostrar fichas retiradas en una zona lateral del tablero, como las organizo en filas y columnas
+```
+
+**Respuesta de la IA:**
+```python
+fichas_por_fila = 5
+margen = 15
+
+for i in range(cantidad_fichas_retiradas):
+    fila = i // fichas_por_fila
+    columna = i % fichas_por_fila
+    
+    x = zona_x + margen + columna * espacio_x
+    y = zona_y + margen + fila * espacio_y
+    
+    if y < zona_bottom:
+        dibujar_ficha(screen, x, y, color)
+```
+
+**Uso:**
+- Usada con modificaciones: Ajusté espaciado y agregué centrado
+
+**Referencia:**
+* `pygame_ui/iboard.py` - método `dibujar_fichas_retiradas`
+
+---
+
+## Prompt 9
+
+**Herramienta utilizada:**
+- GitHub Copilot
+
+**Texto exacto del Prompt:**
+```
+como calculo que fichas ya fueron retiradas del juego para mostrar el contador X/15
+```
+
+**Respuesta de la IA:**
+```python
+def contar_retiradas(tablero, banco):
+    fichas_en_tablero = sum(1 for pos in tablero if pos for ficha in pos)
+    fichas_en_banco = banco["Blancas"]
+    fichas_retiradas = 15 - fichas_en_tablero - fichas_en_banco
+    return fichas_retiradas
+```
+
+**Uso:**
+- Usada con modificaciones: Separé el cálculo por color de ficha
+
+**Referencia:**
+* `pygame_ui/iboard.py` - método `_contar_fichas_retiradas`
+
+---
+
+## Prompt 10
+
+**Herramienta utilizada:**
+- ChatGPT (GPT-4)
+
+**Texto exacto del Prompt:**
+```
+necesito un mapa que convierta posiciones logicas 0-23 en coordenadas visuales x,y del tablero pygame
+```
+
+**Respuesta de la IA:**
+```python
+mapa = {}
+for i in range(6):
+    x = inicio_derecha + i * espacio
+    mapa[i] = (x, y_arriba, True)  # True = hacia abajo
+    
+for i in range(6):
+    x = inicio_izquierda + i * espacio
+    mapa[i+6] = (x, y_arriba, True)
+    
+# Continuar con parte inferior...
+```
+
+**Uso:**
+- Usada con modificaciones: Agregué pygame.Rect para detección de clicks
+
+**Referencia:**
+* `pygame_ui/iboard.py` - método `_crear_mapa_visual`
+
+---
+
+## Prompt 11
+
+**Herramienta utilizada:**
+- GitHub Copilot
+
+**Texto exacto del Prompt:**
+```
+como dibujo texto centrado en pygame con diferentes fuentes y colores
+```
+
+**Respuesta de la IA:**
+```python
+font = pygame.font.SysFont("Arial", 24, bold=True)
+texto_surface = font.render("Texto", True, (255, 255, 255))
+texto_rect = texto_surface.get_rect(center=(x, y))
+screen.blit(texto_surface, texto_rect)
+```
+
+**Uso:**
+- Usada sin cambios
+
+**Referencia:**
+* `pygame_ui/iboard.py` - método `dibujar_texto`
+
+---
+
+## Prompt 12
+
+**Herramienta utilizada:**
+- ChatGPT (GPT-4)
+
+**Texto exacto del Prompt:**
+```
+cuando el jugador selecciona una ficha, quiero mostrar solo los movimientos posibles desde esa posicion
+```
+
+**Respuesta de la IA:**
+```python
+if origen_seleccionado is None:
+    # Primera selección
+    origen_seleccionado = posicion_clickeada
+    todos_movimientos = juego.movimientos_posibles()
+    movimientos_filtrados = {origen_seleccionado: todos_movimientos.get(origen_seleccionado, [])}
+else:
+    # Segunda selección = destino
+    juego.mover_ficha(origen_seleccionado, posicion_clickeada)
+    origen_seleccionado = None
+```
+
+**Uso:**
+- Usada con modificaciones: Agregué manejo de errores y feedback visual
+
+**Referencia:**
+* `pygame_ui/events.py` - métodos `_handle_select_origin` y `_handle_move_to_destination`
+
+---
+
+## Prompt 13
+
+**Herramienta utilizada:**
+- GitHub Copilot
+
+**Texto exacto del Prompt:**
+```
+quiero una pantalla de victoria semitransparente cuando alguien gana con el nombre del ganador
+```
+
+**Respuesta de la IA:**
+```python
+if estado_juego["ganador"]:
+    overlay = pygame.Surface((ancho, alto), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 180))
+    screen.blit(overlay, (0, 0))
+    
+    font_grande = pygame.font.SysFont("Arial", 70, bold=True)
+    texto = f"¡GANADOR: {estado_juego['ganador']}!"
+    texto_surface = font_grande.render(texto, True, (255, 215, 0))
+    texto_rect = texto_surface.get_rect(center=(ancho//2, alto//2))
+    screen.blit(texto_surface, texto_rect)
+```
+
+**Uso:**
+- Usada sin cambios
+
+**Referencia:**
+* `pygame_ui/iboard.py` - método `dibujar` (sección ganador)
+
+---
+
+## Prompt 14 (DESCARTADO)
+
+**Herramienta utilizada:**
+- ChatGPT (GPT-4)
+
+**Texto exacto del Prompt:**
+```
+como agrego sonidos cuando muevo fichas o tiro dados en pygame
+```
+
+**Respuesta de la IA:**
+```python
+pygame.mixer.init()
+sonido_dado = pygame.mixer.Sound("dados.wav")
+sonido_movimiento = pygame.mixer.Sound("movimiento.wav")
+
+# Al tirar dados
+sonido_dado.play()
+
+# Al mover ficha
+sonido_movimiento.play()
+```
+
+**Uso:**
+- Descartada: Decidimos no incluir sonidos para mantener el proyecto simple y enfocado en la lógica
+
+**Referencia:**
+* Ninguna (no implementado)

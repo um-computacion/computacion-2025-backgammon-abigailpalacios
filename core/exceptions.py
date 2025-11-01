@@ -1,15 +1,17 @@
+"""Modulo de excepciones personalizadas del juego."""
+
+
 class BackgammonException(Exception):
-    """Excepción base para el juego de Backgammon"""
-    pass
+    """Excepcion base para errores del juego."""
+
 
 class MovimientoInvalido(BackgammonException):
-    """Se lanza cuando se intenta realizar un movimiento inválido"""
-    pass
+    """Excepcion para movimientos no permitidos."""
+
 
 class SinMovimientos(BackgammonException):
-    """Se lanza cuando no hay movimientos disponibles"""
-    pass
+    """Excepcion cuando no hay movimientos disponibles."""
+
 
 class GameOver(BackgammonException):
-    """Se lanza cuando el juego ha terminado"""
-    pass
+    """Excepcion cuando el juego ha terminado."""
