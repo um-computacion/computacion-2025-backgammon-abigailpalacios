@@ -1,18 +1,24 @@
+"""Modulo que maneja los dados del juego."""
 import random
 
 class Dice:
+    """Clase que representa los dados del juego."""
+
     def __init__(self):
-        self.__dice1__ = 0
-        self.__dice2__ = 0
+        """Inicializa los dados."""
+        self.__dado1__ = 0
+        self.__dado2__ = 0
         self.__movimiento__ = []
 
     def tirar(self):
-        self.__dice1__ = random.randint(1,6)
-        self.__dice2__ = random.randint(1,6)
-        if self.__dice1__ != self.__dice2__:
-            self.__movimiento__ = [self.__dice1__,  self.__dice2__]
+        """Tira los dados y genera los movimientos disponibles."""
+        self.__dado1__ = random.randint(1, 6)
+        self.__dado2__ = random.randint(1, 6)
+        if self.__dado1__ != self.__dado2__:
+            self.__movimiento__ = [self.__dado1__, self.__dado2__]
         else:
-            self.__movimiento__ = [self.__dice1__, self.__dice1__, self.__dice1__, self.__dice2__]
-        
+            self.__movimiento__ = [self.__dado1__] * 4
+
     def get_movimiento(self):
+        """Retorna la lista de movimientos disponibles."""
         return self.__movimiento__

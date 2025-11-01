@@ -14,6 +14,73 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Removed: borrados en el documento
 - Fixed: arreglos en el documento
 
+## 1.6.0 (Sexto Sprint - Finalización)
+
+### Added
+
+- Se creó el archivo `pygame_ui/events.py` para separar la lógica de eventos de la interfaz gráfica
+- Se implementó la clase `EventHandler` que maneja todos los eventos de pygame
+- Se agregó la funcionalidad de resaltado visual de movimientos posibles en verde
+- Se implementó la visualización de fichas retiradas en zonas específicas
+- Se agregó contador visual de fichas retiradas (X/15)
+- Se creó el archivo `pygame_ui/ichecker.py` con las clases `Ficha` y `GrupoFichas`
+- Se implementó el método `reingreso_posible()` en `Backgammongame` para calcular posiciones válidas de reingreso
+- Se agregó el método `estado_juego()` que retorna un diccionario completo con el estado del juego
+- Se implementaron métodos auxiliares `mov_posible()` y `turno_completo()` en `Backgammongame`
+- Se crearon tests completos para la CLI en `cli/test_cli.py`
+- Se agregó la función `imprimir_tablero()` en CLI para visualización mejorada del tablero
+- Se documentó la arquitectura del proyecto en `JUSTIFICACION.md`
+
+### Changed
+
+- Se refactorizó `pygame_ui/main.py` para usar la arquitectura MVC correctamente
+- Se separó la lógica de renderizado en `iboard.py` (Vista) de la lógica de eventos (Controlador)
+- Se mejoró la organización del código en `pygame_ui/` siguiendo el patrón MVC
+- Se optimizó el método `movimientos_posibles()` para considerar el caso de retirar fichas
+- Se actualizó la CLI para mostrar el tablero de forma más visual y clara
+- Se mejoró el manejo de errores en CLI con mensajes más descriptivos
+- Se refactorizó el código de la CLI para eliminar redundancias
+
+### Fixed
+
+- Se corrigió el error en `reingreso_posible()` que devolvía un diccionario con dado como clave en lugar de lista de destinos
+- Se solucionaron problemas de imports relativos en `pygame_ui/`
+- Se corrigió el cálculo de fichas retiradas para no contar las fichas en el banco
+- Se arreglaron los tests de CLI para que pasen correctamente con la nueva implementación
+- Se corrigió el método `retirar_ficha()` para manejar correctamente el caso de usar un dado mayor
+
+### Removed
+
+- Se removió código duplicado en la clase `Tablero` (antiguo board.py de pygame_ui)
+- Se eliminaron métodos obsoletos que generaban redundancia
+
+## 1.5.0 (Quinto Sprint)
+
+### Added
+
+- Se implementó la interfaz gráfica con Pygame en el directorio `pygame_ui/`
+- Se creó la clase `Tablero` en `pygame_ui/board.py` para la visualización del tablero de Backgammon
+- Se implementó el método `dibujar_triangulo()` para crear las puntas triangulares del tablero
+- Se agregó el archivo `pygame_ui/main.py` con interfaz de entrada de jugadores usando Tkinter
+- Se implementaron los 24 triángulos del tablero con colores alternados (claro y oscuro)
+- Se añadió la barra central divisoria del tablero
+- Se configuró el tamaño de pantalla optimizado para Backgammon (1200x600 píxeles)
+- Se integró la lógica del juego desde `Backgammongame` con la interfaz pygame
+- Se implementó la visualización dinámica de fichas según el estado del juego
+
+
+### Changed
+
+- Se ajustó el espaciado y posicionamiento de los triángulos para mayor precisión visual
+- Se optimizaron los colores del tablero: beige claro para fondo, wheat para triángulos claros, y saddle brown para triángulos oscuros
+- Se mejoró la altura de los triángulos (250 píxeles) para mejor proporción visual
+- Se aumentó el tamaño de la ventana a 1400x700 píxeles para mejor visualización
+
+### Fixed
+
+- Se corrigió el posicionamiento de los triángulos para que queden correctamente alineados desde los bordes
+- Se ajustó el cálculo del espacio disponible para evitar solapamientos entre triángulos
+
 ## 1.4.0 (Cuarto Sprint)
 
 ### Added
@@ -118,3 +185,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Corrección en los métodos `validar_movimiento` y `mover_ficha` para contemplar casos inválidos de destino y origen.  
 - Ajuste en `devolver_ficha_comida` para cubrir casos de fichas del mismo color y del color opuesto.  
 - Agregados tests adicionales en la clase `Board` para incrementar la cobertura hasta 100%.
+
+## 1.0.0 (Versión Inicial)
+
+### Added
+
+- Estructura inicial del proyecto
+- Configuración de git y README básico
+- Definición de requisitos del proyecto
