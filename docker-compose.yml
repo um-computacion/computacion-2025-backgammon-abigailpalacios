@@ -1,5 +1,3 @@
-
-
 services:
   backgammon:
     # 1. Nombre de la imagen que construiremos
@@ -17,7 +15,7 @@ services:
     container_name: backgammon-tests
     volumes:
       - .:/app
-    command: python -m unittest discover
+    command: python -m unittest discover -v
 
   backgammon-coverage:
     build: .

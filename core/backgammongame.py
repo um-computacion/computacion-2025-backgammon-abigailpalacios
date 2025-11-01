@@ -143,7 +143,7 @@ class Backgammongame:
                 if tablero[pos] and ficha in tablero[pos]:
                     return False  # Si una ficha se encuentra en las posiciones [0, 17] de las fichas blancas, no se puede validar el sacar una ficha
             return True
-        
+
         for pos in range(6, 24):
             if tablero[pos] and ficha in tablero[pos]:
                 return False  # Si una ficha se encuentra en las posiciones [6, 23] de las fichas negras, no se puede validar el sacar una ficha
@@ -217,85 +217,64 @@ class Backgammongame:
         dados = self.get_dados()
         movimientos = {}
 
-        if (
-            self.banco[ficha] > 0
-        ):  # Si hay fichas en el banco, no se puede mover, solo reingresar fichas
-            return movimientos
-
-        if not dados:  # Si no hay dados para mover, no se puede mover
+        if self.banco[ficha] > 0 or not dados:
             return movimientos
 
         for origen in range(24):
-            if (
-                tablero[origen] and ficha in tablero[origen]
-            ):  # Se busca en el tablero que fichas tengo y si se pueden mover
-                destinos = []
-                for dado in dados:
-
-                    if ficha == "Blancas":
-                        destino = origen + dado  # Si la ficha es blanca, avanza de 0 a 23
-                        if (
-                            destino > 23 and self.posiciones_finales()
-                        ):  # Si la posicion destino es mayor a 23 y todas las fichas estan en posiciones finales, se puede retirar la ficha
-                            if all(
-                                not tablero[pos] or ficha not in tablero[pos]
-                                for pos in range(origen + 1, 24)
-                            ):  # Si verifica que no hayan fichas adelante de la cual se quiere retirar
-                                destinos.append("retirar")
-                        elif (
-                            0 <= destino <= 23
-                        ):  # Verificamos que el destino este dentro del rango del tablero
-                            try:
-                                self.__board__.validar_movimiento(
-                                    destino, origen, ficha
-                                )  # Validamos el movimiento desde board
-                                destinos.append(
-                                    destino
-                                )  # Si se valida el movimiento, se agrega a la lista de destinos posibles
-                            except ValueError:
-                                continue  # Saltamos al siguiente dado en caso de obtener un error
-
-                    else:
-                        destino = origen - dado  # Si la ficha es negra, avanza de 23 a 0
-                        if (
-                            destino < 0 and self.posiciones_finales()
-                        ):  # Si la posicion destino es menor a 0 y todas las fichas estan en posiciones finales, se puede retirar la ficha
-                            if all(
-                                not tablero[pos] or ficha not in tablero[pos]
-                                for pos in range(0, origen)
-                            ):  # Si verifica que no hayan fichas adelante de la cual se quiere retirar
-                                destinos.append("retirar")
-                        elif (
-                            0 <= destino <= 23
-                        ):  # Verificamos que el destino este dentro del rango del tablero
-                            try:
-                                self.__board__.validar_movimiento(
-                                    destino, origen, ficha
-                                )  # Validamos el movimiento desde board
-                                destinos.append(
-                                    destino
-                                )  # Si se valida el movimiento, se agrega a la lista de destinos posibles
-                            except ValueError:
-                                continue  # Saltamos al siguiente dado en caso de obtener un error
+            if tablero[origen] and ficha in tablero[origen]:
+                destinos = self._calcular_destinos(origen, ficha, dados, tablero)
                 if destinos:
-                    movimientos[origen] = (
-                        destinos  # guardamos los movimientos validos en movimientos
-                    )
+                    movimientos[origen] = destinos
         return movimientos
+
+    def _calcular_destinos(self, origen, ficha, dados, tablero):
+        """Calcula los destinos posibles para una ficha desde una posición."""
+        destinos = []
+        for dado in dados:
+            destino = origen + dado if ficha == "Blancas" else origen - dado
+            if self._es_movimiento_valido(destino, origen, ficha, tablero):
+                destinos.append(destino)
+            elif self._puede_retirar(destino, origen, ficha, tablero):
+                destinos.append("retirar")
+        return destinos
+
+    def _es_movimiento_valido(self, destino, origen, ficha, tablero):
+        """Verifica si un movimiento es válido."""
+        if 0 <= destino <= 23:
+            try:
+                self.__board__.validar_movimiento(destino, origen, ficha)
+                return True
+            except ValueError:
+                return False
+        return False
+
+    def _puede_retirar(self, destino, origen, ficha, tablero):
+        """Verifica si una ficha puede ser retirada."""
+        if ficha == "Blancas" and destino > 23 and self.posiciones_finales():
+            return all(
+                not tablero[pos] or ficha not in tablero[pos]
+                for pos in range(origen + 1, 24)
+            )
+        if ficha == "Negras" and destino < 0 and self.posiciones_finales():
+            return all(
+                not tablero[pos] or ficha not in tablero[pos]
+                for pos in range(0, origen)
+            )
+        return False
 
     def reingreso_posible(self):
         """Calcula las posiciones validas para reingresar desde el banco."""
         ficha = self.get_ficha()
         tablero = self.__board__.mostrar_tablero()
         dados = self.get_dados()
-        reingresar = {} 
+        reingresar = {}
         if (
             self.banco[ficha] == 0
         ):  # Si no hay fichas en el banco no se realiza ningun movimiento correspondiente al banco
             return reingresar
         if not dados:  # si no tiene movimientos con el dado, el diccionario queda vacio
             return reingresar
-        des_pos = [] 
+        des_pos = []
 
         for dado in dados:
             if ficha == "Blancas":
@@ -304,15 +283,15 @@ class Backgammongame:
                 destino = 24 - dado
 
             if tablero[destino] is None:
-                des_pos.append(destino)  
+                des_pos.append(destino)
             elif tablero[destino] and tablero[destino][0] == ficha:
-                des_pos.append(destino) 
+                des_pos.append(destino)
             elif tablero[destino] and len(tablero[destino]) == 1 and tablero[destino][0] != ficha:
-                des_pos.append(destino) 
+                des_pos.append(destino)
         if des_pos:
-            reingresar["reingresa"] = des_pos  
+            reingresar["reingresa"] = des_pos
 
-        return reingresar  
+        return reingresar
 
     def estado_juego(self):
         """Retorna un diccionario con el estado completo del juego."""
@@ -355,3 +334,44 @@ class Backgammongame:
     def game_over(self):
         """Verifica si el juego ha terminado."""
         return self.ganador() is not None
+
+    def mostrar_tablero(self):
+        """Muestra el tablero de forma visual."""
+        tablero = self.__board__.mostrar_tablero()
+        banco = self.banco
+
+        resultado = "\n" + "=" * 50 + "\n"
+        resultado += " 13 14 15 16 17 18 || 19 20 21 22 23 24\n"
+        resultado += "-" * 50 + "\n"
+
+        linea_sup = ""
+        for i in range(12, 24):
+            if i == 18:
+                linea_sup += " || "
+            if tablero[i] is None:
+                linea_sup += " .  "
+            elif tablero[i][0] == "Blancas":
+                linea_sup += f" B{len(tablero[i])} "
+            else:
+                linea_sup += f" N{len(tablero[i])} "
+        resultado += linea_sup + "\n"
+
+        resultado += f"\nBANCO: Blancas[{banco.get('Blancas', 0)}] Negras[{banco.get('Negras', 0)}]\n\n"
+
+        linea_inf = ""
+        for i in range(11, -1, -1):
+            if i == 5:
+                linea_inf += " || "
+            if tablero[i] is None:
+                linea_inf += " .  "
+            elif tablero[i][0] == "Blancas":
+                linea_inf += f" B{len(tablero[i])} "
+            else:
+                linea_inf += f" N{len(tablero[i])} "
+        resultado += linea_inf + "\n"
+
+        resultado += "-" * 50 + "\n"
+        resultado += " 12 11 10  9  8  7 ||  6  5  4  3  2  1\n"
+        resultado += "=" * 50 + "\n"
+
+        return resultado
