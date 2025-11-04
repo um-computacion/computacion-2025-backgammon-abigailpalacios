@@ -202,39 +202,38 @@ class TestMainFlujo(unittest.TestCase):
             
             mock_game_instance.reingresar_ficha.assert_called_once()
     
+    @patch('cli.cli.Backgammongame')
     @patch('builtins.input')
     @patch('builtins.print')
-    def test_ganador_detectado(self, mock_print, mock_input):
+    def test_ganador_detectado(self, mock_print, mock_input, mock_game):
         """Test que se detecta cuando hay un ganador."""
         llamadas_dados = [0]
-        
+
         def dados_restantes_mock():
             llamadas_dados[0] += 1
             return llamadas_dados[0] == 1
-        
+
         mock_input.side_effect = ['Jugador1', 'Jugador2', '1', '1', '3']
-        
-        with patch('cli.cli.Backgammongame') as mock_game:
-            mock_game_instance = MagicMock()
-            mock_game_instance.game_over.return_value = False
-            mock_game_instance.get_turno.return_value = MagicMock(
-                get_nombre=lambda: 'Jugador1',
-                get_ficha=lambda: 'Blancas'
-            )
-            mock_game_instance.tirar_dados.return_value = [2]
-            mock_game_instance.dados_restantes.side_effect = dados_restantes_mock
-            mock_game_instance.mostrar_tablero.return_value = "tablero"
-            mock_game_instance.get_dados.return_value = [2]
-            mock_game_instance.get_banco.return_value = {'Blancas': 0, 'Negras': 0}
-            mock_game_instance.movimientos_posibles.return_value = {0: [2]}
-            mock_game_instance.mover_ficha.return_value = None
-            mock_game_instance.ganador.return_value = 'Jugador1'
-            mock_game.return_value = mock_game_instance
-            
-            main()
-            
-            calls = [str(call) for call in mock_print.call_args_list]
-            self.assertTrue(any('Gano' in str(call) or 'Jugador1' in str(call) for call in calls))
+        mock_game_instance = MagicMock()
+        mock_game_instance.game_over.side_effect = [False, True]
+        mock_game_instance.get_turno.return_value = MagicMock(
+            get_nombre=lambda: 'Jugador1',
+            get_ficha=lambda: 'Blancas'
+        )
+        mock_game_instance.tirar_dados.return_value = [2]
+        mock_game_instance.dados_restantes.side_effect = dados_restantes_mock
+        mock_game_instance.mostrar_tablero.return_value = "tablero"
+        mock_game_instance.get_dados.return_value = [2]
+        mock_game_instance.get_banco.return_value = {'Blancas': 0, 'Negras': 0}
+        mock_game_instance.movimientos_posibles.return_value = {0: [2]}
+        mock_game_instance.mover_ficha.return_value = None
+        mock_game_instance.ganador.return_value = 'Jugador1'
+        mock_game.return_value = mock_game_instance
+
+        main()
+
+        calls = [str(call) for call in mock_print.call_args_list]
+        self.assertTrue(any('Gano' in str(call) or 'Jugador1' in str(call) for call in calls))
 
 
 if __name__ == '__main__':
