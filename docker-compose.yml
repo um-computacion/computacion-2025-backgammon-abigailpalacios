@@ -1,0 +1,44 @@
+services:
+  backgammon:
+    # 1. Nombre de la imagen que construiremos
+    image: backgammon-2025
+    # 2. Le dice a Docker que use el Dockerfile en la carpeta actual ('.')
+    build: .
+    # 3. ¡MUY IMPORTANTE!
+    # Estas dos líneas nos permiten interactuar con la CLI (cli/cli.py)
+    # y usar la función input() dentro de Docker.
+    tty: true
+    stdin_open: true
+
+  backgammon-test:
+    build: .
+    container_name: backgammon-tests
+    volumes:
+      - .:/app
+    command: python -m unittest discover -v
+
+  backgammon-coverage:
+    build: .
+    container_name: backgammon-coverage
+    volumes:
+      - .:/app
+    command: >
+      sh -c "coverage run -m unittest discover &&
+             coverage report -m &&
+             coverage html"
+
+  backgammon-pylint:
+    build: .
+    container_name: backgammon-pylint
+    volumes:
+      - .:/app
+    command: pylint --rcfile=.pylintrc core cli pygame_ui
+
+  backgammon-cli:
+    build: .
+    container_name: backgammon-cli
+    volumes:
+      - .:/app
+    stdin_open: true
+    tty: true
+    command: python -m cli.cli
